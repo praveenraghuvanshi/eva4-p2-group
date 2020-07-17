@@ -17,7 +17,7 @@
 
 **Input Image**
 
-<img src=".\dog.png" alt="Golden Retriever" style="zoom:80%;" />
+<img src=".\dog1.png" alt="Yellow Labrador Retriever" style="zoom:80%;" />
 
 
 
