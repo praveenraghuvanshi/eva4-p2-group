@@ -21,7 +21,7 @@
 
 
 
-**Predicted:** 207 (golden retriever)
+**Predicted:** 208 (Yellow Labrador Retriever)
 
 
 
