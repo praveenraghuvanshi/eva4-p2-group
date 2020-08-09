@@ -9,9 +9,10 @@
 
 ## Resources
 
-- Github: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-1/Assignment-1/ReadMe.md
+- Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-2/Assignment-2
+- Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-2/Assignment-2/src
+- Notebook: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-2/Assignment-2/src/eva4p2s2.ipynb
 - Rest API: https://41qjwezhob.execute-api.ap-south-1.amazonaws.com/dev/classify
-- Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-1/Assignment-1/src/eva4-p2-assignment-1
 
 ## Result
 
