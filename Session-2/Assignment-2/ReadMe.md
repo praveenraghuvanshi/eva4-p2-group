@@ -94,19 +94,48 @@ Predicted:
 
 **Assignment Questions**
 
-Q: Explain the code?
+**Q: Explain the code?**
 
 Ans: The problem given was to classify among [Flying Birds, Large QuadCopters, Small QuadCopters]. The images given was of varying size and types. The code is modularized into different functions as can be seen in [Link](.\src\eva4p2s2.ipynb). We followed the standard pattern of an Machine learning solution. The steps followed comprise of loading data, performing exploratory data analysis, data cleaning, loading data in data loader, display sample images, loading Mobilenet_V2 pretrainined model and modifying the classifying layer to classify 4 layers, tuning hyperparameters and optimizers, training and evaluating the model.
 
-Q: Your resizing strategy?
+**Q: Your resizing strategy?**
 
 Ans:
 
-Q: What model did you train?
+- Collected images from Google Drive (At the time we collect
+  Wednesday Afternoon as per Admin, the total Number of Images :
+  22K+)
+- Observed few different type of Images well other tahn *.jpg or *.png
+  (like GIF, html,json...etc, few images with 0KB of size too)
+- 1st, So through PIL and glob modules identified the images other than
+  JPG/JPEG/PNG image types and removed those from the dataset.
+- 2nd, In the JPG/JPEG/PNG images Identified "0 KB" files and
+  removed through script.
+- 3rd, using PIL module, resized the existing Image data set (21350) to
+  224*224*3
+- Finally we trained our model on this data set 224*224*3
+
+ 
+
+We resized the Images prior because, if we add resize in transformation :
+
+- Execution time is getting increased due to calculations because of
+  many computations in transformations
+- Mainly observed that few images are of >64 MB in size.
+  Resulting data set size is more.
+
+ 
+
+Summary of data set size:
+
+- Collected from Google drive : ~4 GB (22 K+ Images)
+- After cleanup and resize of Images : 137 MB (21350 Images)
+
+**Q: What model did you train?**
 
 Ans: We used Mobilenet_V2 pretrained model. The original model has been trained on 1000 classes. We did freeze all the layers and modified classification layer to classify 4 types as mentioned above.
 
-Q: Accuracy vs epochs graphs for train and test curves
+**Q: Accuracy vs epochs graphs for train and test curves**
 
 Ans: We did plot the loss curve and not the accuracy.
 
