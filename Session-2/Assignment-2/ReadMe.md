@@ -32,7 +32,7 @@ Predicted:
 
 
 
-**Large Qaudraptor**
+**Large Quadcopter**
 
 <img src=".\assets\largeQ.png" alt="Small Quadroptor" style="zoom:50%;" />
 
@@ -47,7 +47,7 @@ Predicted:
 
 
 
-**Small Quadraptor**
+**Small Quadcopter**
 
 <img src=".\assets\smallQ.png" alt="Small Quadroptor" style="zoom:80%;" />
 
@@ -88,6 +88,32 @@ Predicted:
 **Cloudwatch Logs**
 
 <img src=".\assets\cloudwatch-logs.png" alt="cloudwatch-logs" style="zoom:80%;" />
+
+
+
+**Assignment Questions**
+
+Q: Explain the code?
+
+Ans: The problem given was to classify among [Flying Birds, Large QuadCopters, Small QuadCopters]. The images given was of varying size and types. The code is modularized into different functions as can be seen in [Link](.\src\eva4p2s2.ipynb). We followed the standard pattern of an Machine learning solution. The steps followed comprise of loading data, performing exploratory data analysis, data cleaning, loading data in data loader, display sample images, loading Mobilenet_V2 pretrainined model and modifying the classifying layer to classify 4 layers, tuning hyperparameters and optimizers, training and evaluating the model.
+
+Q: Your resizing strategy?
+
+Ans:
+
+Q: What model did you train?
+
+Ans: We used Mobilenet_V2 pretrained model. The original model has been trained on 1000 classes. We did freeze all the layers and modified classification layer to classify 4 types as mentioned above.
+
+Q: Accuracy vs epochs graphs for train and test curves
+
+Ans: We did plot the loss curve and not the accuracy.
+
+<img src=".\assets\loss-curve.png" alt="Loss Curve" style="zoom:70%;" />
+
+Q: 10 misclassified images for each of the classes as an Image Gallery
+
+Ans: 
 
 ## Source
 
