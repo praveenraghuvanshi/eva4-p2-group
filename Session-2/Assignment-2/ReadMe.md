@@ -147,7 +147,7 @@ Ans:
 
 ```
 Abbrevation used: 
-T: Target, P: Prediction
+T: Truth, P: Predicted
 FB: Flying Birds
 LQ: Large QuadCopters
 SQ: Small QuadCopters
