@@ -188,30 +188,13 @@ print("Import END...")
 
 # define env variables if there are not existing
 S3_BUCKET = os.environ['MODEL_BUCKET_NAME'] if 'MODEL_BUCKET_NAME' in os.environ else 'eva4p2bucket1'
-MODEL_PATH = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 'modelnet_v2_44_77.pt'
-
-'''if 'MODEL_BUCKET_NAME' in os.environ:
-    print(os.environ['MODEL_BUCKET_NAME'])
-
-if 'MODEL_FILE_NAME_KEY' in os.environ:
-    print(os.environ['MODEL_FILE_NAME_KEY'])'''
-
-print(S3_BUCKET)
-print(MODEL_PATH)
-
-print('Downloading model...')
+MODEL_PATH = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 'model.pt'
 
 # load the S3 client when lambda execution context is created
 s3 = boto3.client('s3')
-# print('s3 called')
 
 def load_model_from_s3():
     try:
-        # print('Inside try...')
-        # print(MODEL_PATH)
-        # print(os.path.isfile(MODEL_PATH))
-        # if os.path.isfile(MODEL_PATH) != True:
-        # print('Inside if...')
         cuda = torch.cuda.is_available()
         print("CUDA Available?", cuda)
 
@@ -233,7 +216,6 @@ print(model is None)
 
 def transform_image(image_bytes):
     print('Transformation Start...')
-    # print(model is None)
     try:
         transformations = transforms.Compose([
             transforms.Resize(224),
@@ -251,18 +233,13 @@ def transform_image(image_bytes):
 
 def get_prediction(image_bytes):
     print('Getting Prediction...')
-    # print(model is None)
     tensor = transform_image(image_bytes=image_bytes)
-    print(model is None)
     return model(tensor).argmax().item()
 
 
 def classify_image(event, context):
-    # print(model is None)
     try:
         content_type_header = event['headers']['content-type']
-        # print(event['body'])
-        # print(event['headers'])
         body = base64.b64decode(event["body"])
         print('BODY Loaded')
 
@@ -313,7 +290,7 @@ def classify_image(event, context):
 #
 # Happy Coding!
 
-service: eva4-p2-assignment-1
+service: eva4p2-assignment2
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -331,7 +308,7 @@ provider:
 
   environment:
     MODEL_BUCKET_NAME: eva4p2bucket1
-    MODEL_FILE_NAME_KEY: mobilenet_v2_44_77.pt
+    MODEL_FILE_NAME_KEY: model.pt
   iamRoleStatements:
     - Effect: "Allow"
       Action:
