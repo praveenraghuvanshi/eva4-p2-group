@@ -145,6 +145,17 @@ Q: 10 misclassified images for each of the classes as an Image Gallery
 
 Ans: 
 
+```
+Abbrevation used: 
+T: Target, P: Prediction
+FB: Flying Birds
+LQ: Large QuadCopters
+SQ: Small QuadCopters
+WD: Winged Drones
+```
+
+<img src=".\assets\misclassified.png" alt="image-20200809235213043" style="zoom:80%;" />
+
 ## Source
 
 **handle.py**
