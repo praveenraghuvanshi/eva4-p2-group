@@ -154,7 +154,7 @@ SQ: Small QuadCopters
 WD: Winged Drones
 ```
 
-<img src=".\assets\misclassified.png" alt="image-20200809235213043" style="zoom:80%;" />
+<img src=".\assets\misclassified.png" alt="Misclassified images" style="zoom:80%;" />
 
 ## Source
 
