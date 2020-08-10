@@ -11,7 +11,9 @@
 
 - Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-2/Assignment-2
 - Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-2/Assignment-2/src
-- Notebook: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-2/Assignment-2/src/eva4p2s2.ipynb
+- Notebooks:
+  - https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-2/Assignment-2/src/eva4p2s2.ipynb
+  - https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-2/Assignment-2/src/eva4p2s2_new.ipynb
 - Rest API: https://41qjwezhob.execute-api.ap-south-1.amazonaws.com/dev/classify
 
 ## Result
