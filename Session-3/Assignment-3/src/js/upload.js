@@ -1,4 +1,4 @@
-function uploadAndClassifyImage(){
+function uploadAndClassifyImage(url){
 	var fileInput = document.getElementById('resnet34FileUpload').files;
 	if(!fileInput.length){
 		return alert('Please choose a file to upload first');
@@ -16,7 +16,7 @@ function uploadAndClassifyImage(){
 		async: true,
 		crossDomain: true,
 		method: 'POST',
-		url: 'https://k4n27qf9bc.execute-api.ap-south-1.amazonaws.com/dev/classify',
+		url: url,
 		data: formData,
 		processData: false,
 		contentType: false,
@@ -29,4 +29,4 @@ function uploadAndClassifyImage(){
 	.fail(function () {alert("There was an error while sending prediction request to resnet34 model."); });
 };
 
-$('#btnResNetUpload').click(uploadAndClassifyImage);
+//$('#btnResNetUpload').click(uploadAndClassifyImage);

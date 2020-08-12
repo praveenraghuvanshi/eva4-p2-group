@@ -14,7 +14,11 @@
 				<input type="file" id="resnet34FileUpload">
 			</div>
 			<div class="large-8 cell">
-				<input type="button" id="btnResNetUpload" class="button" value="Classify Image">
+				<input type="button" id="btnResNetUpload" onclick="uploadAndClassifyImage('https://k4n27qf9bc.execute-api.ap-south-1.amazonaws.com/dev/classify')" class="button" value="Classify Image - Resnet34">
+			</div>
+			</br>
+			<div class="large-8 cell">
+				<input type="button" id="btnResNetUpload" onclick="uploadAndClassifyImage('https://41qjwezhob.execute-api.ap-south-1.amazonaws.com/dev/classify')" class="button" value="Classify Image - MobileNet">
 			</div>
 			<p id="result"></p>
 			</div>
