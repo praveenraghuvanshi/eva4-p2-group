@@ -79,6 +79,9 @@ def get_prediction(image_tensor):
 
 def DoesImageHasFace(image_tensor):
     print('Image contains face')
+    # 1. Identify if face is there or not
+    # 2. Return aligned image
+
     return True
     
 
@@ -98,6 +101,13 @@ def classify_image(event, context):
         if len(filename) < 4:
             filename = picture.headers[b'Content-Disposition'].decode().split(';')[2].split('=')[1]
 
+        body = base64.b64decode(event["body"])
+        picture = decoder.MultipartDecoder(body, content_type_header).parts[0]        
+        print(f'type of image: {type(picture.content)}')
+        print(picture.content)
+        encoded_img = base64.b64encode(picture.content).decode('ascii') # picture.content.decode('utf-8').replace("'", '"')
+        print(f'Response image: {type(encoded_img)}')
+
         return {
             "statusCode": 200,
             "headers": {
@@ -106,7 +116,7 @@ def classify_image(event, context):
                 "Access-Control-Allow-Credentials": True
 
             },
-            "body": json.dumps({'file': filename.replace('"', ''), 'predicted': prediction, 'containsface': str(imageHasFace)})
+            "body": json.dumps({'file': filename.replace('"', ''), 'predicted': prediction, 'containsface': str(imageHasFace), 'imagebytes': encoded_img})
         }
     except Exception as e:
         print(repr(e))
