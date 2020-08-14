@@ -264,6 +264,9 @@ var/
 *.egg
 
 # Serverless directories
-.serverlessSession-2/Assignment-2/src/.requirements.zip
-Session-2/Assignment-2/src/.requirements.zip
-Session-2/Assignment-2/src/cache/
+cache/
+admin.env
+.env
+_meta
+.serverless
+*.requirements.zip

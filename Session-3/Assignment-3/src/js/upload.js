@@ -11,6 +11,7 @@ function uploadAndClassifyImage(url){
 	formData.append(filename, file);
 	
 	console.log(filename);
+	console.log(url);
 	
 	$.ajax({
 		async: true,
@@ -26,7 +27,10 @@ function uploadAndClassifyImage(url){
 		console.log(response);
 		document.getElementById('result').textContent = response;
 	})
-	.fail(function () {alert("There was an error while sending prediction request to resnet34 model."); });
+	.fail(function (error) {
+		alert("There was an error while sending prediction request to resnet34 model."); 
+		console.log(error);
+	});
 };
 
 //$('#btnResNetUpload').click(uploadAndClassifyImage);
