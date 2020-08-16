@@ -1,3 +1,18 @@
+function readURL(input) {
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+
+		reader.onload = function (e) {
+			$('#uploadedImage')
+				.attr('src', e.target.result)
+				.width(150)
+				.height(200);
+		};
+
+		reader.readAsDataURL(input.files[0]);
+	}
+}
+
 function uploadAndClassifyImage(url){
 	var fileInput = document.getElementById('resnet34FileUpload').files;
 	if(!fileInput.length){
@@ -12,7 +27,9 @@ function uploadAndClassifyImage(url){
 	
 	console.log(filename);
 	console.log(url);
-	
+	console.log('Processing...');
+
+	document.getElementById('result').textContent = 'Processing...';
 	$.ajax({
 		async: true,
 		crossDomain: true,
@@ -25,12 +42,21 @@ function uploadAndClassifyImage(url){
 	})
 	.done(function (response) {
 		responseJson = JSON.parse(response);
-		console.log(responseJson.predicted);
-		document.getElementById('result').textContent = responseJson.predicted;
-		if(responseJson.imagebytes.length < 2){
-			document.getElementById('result').textContent = 'Image does not have any face, Pls upload image with face!!!'
+		if(responseJson.imagebytes){
+			if(responseJson.imagebytes.length > 1){
+				document.getElementById("ItemPreview").src = responseJson.imagebytes;
+				document.getElementById('result').textContent = '';
+			}
+			else{
+				document.getElementById('result').textContent = 'Image does not have any face, Pls upload image containing face !!!'
+			}
 		}
-		document.getElementById("ItemPreview").src = responseJson.imagebytes;
+		else if(responseJson.predicted >= 0){
+			document.getElementById('result').textContent = responseJson.predicted;
+		}
+		else{
+			document.getElementById('result').textContent = 'Image does not have any face, Pls upload image containing face !!!'
+		}
 	})
 	.fail(function (error) {
 		alert("There was an error while sending prediction request to resnet34 model."); 
