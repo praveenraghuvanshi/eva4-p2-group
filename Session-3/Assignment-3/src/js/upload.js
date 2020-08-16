@@ -27,6 +27,9 @@ function uploadAndClassifyImage(url){
 		responseJson = JSON.parse(response);
 		console.log(responseJson.predicted);
 		document.getElementById('result').textContent = responseJson.predicted;
+		if(responseJson.imagebytes.length < 2){
+			document.getElementById('result').textContent = 'Image does not have any face, Pls upload image with face!!!'
+		}
 		document.getElementById("ItemPreview").src = responseJson.imagebytes;
 	})
 	.fail(function (error) {
