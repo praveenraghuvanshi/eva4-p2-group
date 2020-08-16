@@ -19,6 +19,12 @@ import base64
 import json
 import sys
 from requests_toolbelt.multipart import decoder
+
+import dlib
+import cv2
+import numpy as np
+import faceBlendCommon as fbc
+
 print("Import END...")
 
 # print(os.getcwd())
@@ -26,6 +32,7 @@ print("Import END...")
 # define env variables if there are not existing
 S3_BUCKET = os.environ['MODEL_BUCKET_NAME'] if 'MODEL_BUCKET_NAME' in os.environ else 'eva4p2bucket1'
 MODEL_PATH = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 'model.pt'
+PREDICTOR_PATH = os.environ['PREDICTOR_5_FACE_DETECTOR_KEY'] if 'PREDICTOR_5_FACE_DETECTOR_KEY' in os.environ else 'shape_predictor_5_face_landmarks.dat'
 
 # load the S3 client when lambda execution context is created
 s3 = boto3.client('s3')
@@ -77,13 +84,33 @@ def get_prediction(image_tensor):
     print('Getting Prediction - tensor...')
     return model(image_tensor).argmax().item()
 
-def DoesImageHasFace(image_tensor):
+def get_aligned_image(image_bytes):
     print('Image contains face')
     # 1. Identify if face is there or not
     # 2. Return aligned image
 
-    return True
-    
+    faceDetector = dlib.get_frontal_face_detector()
+    landmarkDetector = dlib.shape_predictor("s3://eva4p2bucket1/shape_predictor_5_face_landmarks.dat")
+
+    # imageFileName = DATA_PATH + "images/face.jpg"
+    # im = cv2.imread(imageFileName)
+
+    im_arr = np.frombuffer(image_bytes, dtype=np.uint8)
+    im = cv2.imdecode(im_arr, flags=cv2.IMREAD_COLOR)
+
+    points = fbc.getLandmarks(faceDetector, landmarkDetector, im)
+    points = np.array(points)
+    print(len(points))
+
+    im = np.float32(im)/255.0
+
+    h = 600
+    w = 600
+
+    imNorm, points = fbc.normalizeImagesAndLandmarks((h, w), im, points)
+    imNorm = np.uint8(imNorm * 255)
+
+    return imNorm
 
 def classify_image(event, context):
     try:
@@ -92,21 +119,24 @@ def classify_image(event, context):
         print('BODY Loaded')
 
         picture = decoder.MultipartDecoder(body, content_type_header).parts[0]
-        image_tensor = transform_image(image_bytes=picture.content)
-        imageHasFace = DoesImageHasFace(image_tensor)
-        prediction = get_prediction(image_tensor=image_tensor)
-        print(f'Predicted value: {prediction}')
+        # image_tensor = transform_image(image_bytes=picture.content)
+        imNorm = get_aligned_image(picture.content)
+        print(type(imNorm))
+        # prediction = get_prediction(image_tensor=image_tensor)
+        # print(f'Predicted value: {prediction}')
 
         filename = picture.headers[b'Content-Disposition'].decode().split(';')[1].split('=')[1]
         if len(filename) < 4:
             filename = picture.headers[b'Content-Disposition'].decode().split(';')[2].split('=')[1]
 
-        body = base64.b64decode(event["body"])
+        image = Image.open(io.BytesIO(picture.content))
+
+        '''body = base64.b64decode(event["body"])
         picture = decoder.MultipartDecoder(body, content_type_header).parts[0]        
         print(f'type of image: {type(picture.content)}')
         print(picture.content)
         encoded_img = base64.b64encode(picture.content).decode('ascii') # picture.content.decode('utf-8').replace("'", '"')
-        print(f'Response image: {type(encoded_img)}')
+        print(f'Response image: {type(encoded_img)}')'''
 
         return {
             "statusCode": 200,
@@ -116,7 +146,7 @@ def classify_image(event, context):
                 "Access-Control-Allow-Credentials": True
 
             },
-            "body": json.dumps({'file': filename.replace('"', ''), 'predicted': prediction, 'containsface': str(imageHasFace), 'imagebytes': encoded_img})
+            "body": json.dumps({'file': filename.replace('"', ''), 'predicted': prediction, 'containsface': str(imageHasFace), 'imagebytes': imNorm})
         }
     except Exception as e:
         print(repr(e))

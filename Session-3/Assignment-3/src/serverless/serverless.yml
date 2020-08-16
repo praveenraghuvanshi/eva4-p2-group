@@ -30,6 +30,7 @@ provider:
   environment:
     MODEL_BUCKET_NAME: eva4p2bucket1
     MODEL_FILE_NAME_KEY: model.pt
+    PREDICTOR_5_FACE_DETECTOR_KEY: shape_predictor_5_face_landmarks.dat
   iamRoleStatements:
     - Effect: "Allow"
       Action:
