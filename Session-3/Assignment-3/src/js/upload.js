@@ -27,7 +27,7 @@ function uploadAndClassifyImage(url){
 		responseJson = JSON.parse(response);
 		console.log(responseJson.predicted);
 		document.getElementById('result').textContent = responseJson.predicted;
-		document.getElementById("ItemPreview").src = "data:image/png;base64," + responseJson.imagebytes;
+		document.getElementById("ItemPreview").src = responseJson.imagebytes;
 	})
 	.fail(function (error) {
 		alert("There was an error while sending prediction request to resnet34 model."); 

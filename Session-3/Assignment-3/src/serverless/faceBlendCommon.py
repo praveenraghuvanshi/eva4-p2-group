@@ -75,6 +75,8 @@ def similarityTransform(inPoints, outPoints):
 # are the width and height of outSize.
 def normalizeImagesAndLandmarks(outSize, imIn, pointsIn):
   h, w = outSize
+  eyecornerSrc = []
+  print(f'Points In: {len(pointsIn)}')
 
   # Corners of the eye in input image
   if len(pointsIn) == 68:
