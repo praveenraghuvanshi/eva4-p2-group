@@ -61,7 +61,7 @@ function uploadAndClassifyImage(url){
 		}
 	})
 	.fail(function (error) {
-		alert("There was an error while sending prediction request to resnet34 model."); 
+		alert("There was an error while processing the request."); 
 		console.log(error);
 	});
 };

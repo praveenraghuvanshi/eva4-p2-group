@@ -16,7 +16,7 @@
 
 ## Result
 
-<img src=".\assets\face-recognition.png" alt="Face Recognition" style="zoom:80%;" />
+<img src=".\assets\hpe-result.png" alt="Human Pose Estimation" style="zoom:80%;" />
 
 ## Source
 
