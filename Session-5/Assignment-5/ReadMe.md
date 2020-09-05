@@ -1,4 +1,4 @@
-# EVA-4 Phase-2 : Assignment - 4
+# EVA-4 Phase-2 : Assignment - 5
 
 ### Team Members
 
@@ -9,10 +9,10 @@
 
 ## Resources
 
-- Webpage: https://suman-p2-bucket.s3.ap-south-1.amazonaws.com/index.html
-- Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-4/Assignment-4
-- Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-4/Assignment-4/src
-- Notebooks: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-4/Assignment-4/src/eva4p2s4.ipynb
+- Webpage: https://eva4p2bucket1.s3.ap-south-1.amazonaws.com/src/index.html
+- Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-5/Assignment-5
+- Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-5/Assignment-5/src
+- Notebooks: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-5/Assignment-5/src/eva4p2s5.ipynb
 
 ## Result
 
