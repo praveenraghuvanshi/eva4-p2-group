@@ -38,3 +38,7 @@
 - npm run deploy
 - Grant permission to docker for file sharing
 - Update API gateway settings : multipart/form-data and */*
+  
+**Errors**
+- ValueError('string argument should contain only ASCII characters')
+  - Update API gateway settings : multipart/form-data and */*
