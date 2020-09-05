@@ -159,7 +159,7 @@ def get_hpe_image(image_bytes):
     THRESHOLD = 0.8
     (OUT_HEIGHT, OUT_WIDTH) = (64,64)
     OUT_SHAPE = (OUT_HEIGHT, OUT_WIDTH)
-    image_p = Image.open(image) # cv2.imread(IMAGE_FILE)
+    image_p = image # Image.open(image) # cv2.imread(IMAGE_FILE)
     pose_layers = ort_outs
 
     from operator import itemgetter
