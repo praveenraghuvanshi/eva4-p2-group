@@ -33,7 +33,7 @@
 - Start powershell in admin mode
 - Set execution policy 
   - Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-- sls create --template aws-python3 --name <service-name>
+- serverless create --template aws-python3 --name <service-name>
 - serverless plugin install --name serverless-python-requirements
 - npm run deploy
 - Grant permission to docker for file sharing
