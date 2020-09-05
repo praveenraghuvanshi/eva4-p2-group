@@ -13,6 +13,7 @@
 - Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-5/Assignment-5
 - Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-5/Assignment-5/src
 - Notebooks: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-5/Assignment-5/src/eva4p2s5.ipynb
+- [Paper Review](PaperReview.md)
 
 ## Result
 
