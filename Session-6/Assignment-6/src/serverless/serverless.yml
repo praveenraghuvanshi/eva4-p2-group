@@ -1,4 +1,4 @@
-service: s6ganrealfake
+service: s6dcgan
 
 provider:
     name: aws
@@ -9,6 +9,7 @@ provider:
 
     environment:
         MODEL_BUCKET_NAME: suman-p2-bucket
+        MODEL_FILE_NAME_KEY: netG_chkpt_1840_torch1.5_traced.pth
     iamRoleStatements:
         - Effect: "Allow"
           Action:
