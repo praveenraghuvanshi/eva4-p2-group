@@ -17,13 +17,13 @@ function gan(url) {
 	$.ajax({
 		async: true,
 		crossDomain: true,
-		method: 'POST',
+		method: 'GET',
 		url: url,
 		processData: false,
 		contentType: false
 	})
 	.done(function (response) {
-		responseJson = JSON.parse(response);
+		responseJson = response;
         console.log(responseJson);
 		if(responseJson.imagebytes){
 			if(responseJson.imagebytes.length > 1){
@@ -42,7 +42,6 @@ function gan(url) {
 		alert("There was an error while processing the model"); 
 		console.log(error);
 	});
-    
 }
 
 function uploadAndClassifyImage(url){
