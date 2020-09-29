@@ -15,8 +15,8 @@ except Exception as e:
     print('### Exception occured while importing modules : {}'.format(str(e)))
 
 # define env variables if there are not existing
-S3_BUCKET   = os.environ['MODEL_BUCKET_NAME'] if 'MODEL_BUCKET_NAME' in os.environ else 'suman-p2-bucket'
-MODEL_PATH  = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 'netG_chkpt_1840_torch1.5_traced.pth'
+S3_BUCKET   = os.environ['MODEL_BUCKET_NAME'] if 'MODEL_BUCKET_NAME' in os.environ else 'eva4p2bucket1'
+MODEL_PATH  = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 'gans.pth'
 print('### S3 Bkt is : {} \nModel path is : {}'.format(S3_BUCKET,MODEL_PATH))
 
 # Create client to AWS S3
@@ -38,9 +38,9 @@ def load_model_from_s3bkt():
 model   = load_model_from_s3bkt()
 device  = 'cpu'
 
-def dcGAN_car(event, context):
+def generatefakeimage(event, context):
     try:
-        print('### You are in handler dcGAN_car function')
+        print('### You are in handler generatefakeimage function')
         print('### event is : {}'.format(event))
         print('### Context is : {}'.format(context))
         #content_type_header = event['headers']['content-type']
