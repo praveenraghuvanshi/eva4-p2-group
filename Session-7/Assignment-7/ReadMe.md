@@ -16,7 +16,17 @@
 
 ## Result
 
+### Epoch 1
 
+<img src="assets\output0.png" alt="Output - Epoch 1" style="zoom:150%;" />
+
+### Epoch 1000
+
+<img src="assets\output999.png" alt="Output - Epoch 1000" style="zoom:150%;" />
+
+### Epoch 2000
+
+<img src="assets\output1999.png" alt="Output - Epoch 2000" style="zoom:150%;" />
 
 ## Source
 
