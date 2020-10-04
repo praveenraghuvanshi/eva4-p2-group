@@ -38,3 +38,7 @@
 
 **[serverless.yml](src/serverless/serverless.yml)**
 
+## References
+
+- https://debuggercafe.com/getting-started-with-variational-autoencoder-using-pytorch/
+

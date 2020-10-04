@@ -7,13 +7,28 @@ class LinearVAE(nn.Module):
     def __init__(self):
         super(LinearVAE, self).__init__()
  
-        # encoder
+        '''# encoder
         self.enc1 = nn.Linear(in_features=3*64*64, out_features=512)
         self.enc2 = nn.Linear(in_features=512, out_features=32)
  
         # decoder 
         self.dec1 = nn.Linear(in_features=32, out_features=512)
-        self.dec2 = nn.Linear(in_features=512, out_features=3*64*64)
+        self.dec2 = nn.Linear(in_features=512, out_features=3*64*64)'''
+
+        # Encoder 
+        self.encoder = nn. Sequential(
+            nn.Linear(in_features=3*64*64, out_features=512),
+            nn.ReLU(inplace=True),
+            nn.Linear(in_features=512, out_features=32)
+        )
+
+        # Decoder 
+        self.decoder = nn. Sequential(
+            nn.Linear(in_features=32, out_features=512),
+            nn.ReLU(inplace=True),
+            nn.Linear(in_features=512, out_features=3*64*64)
+        )
+
     def reparameterize(self, mu, log_var):
         """
         :param mu: mean from the encoder's latent space
@@ -25,7 +40,7 @@ class LinearVAE(nn.Module):
         return sample
  
     def forward(self, x):
-        # encoding
+        '''# encoding
         x = F.relu(self.enc1(x))
         x = self.enc2(x)
         # get `mu` and `log_var`
@@ -37,4 +52,18 @@ class LinearVAE(nn.Module):
         # decoding
         x = F.relu(self.dec1(z))
         reconstruction = torch.sigmoid(self.dec2(x))
+        return reconstruction, mu, log_var'''
+
+        # encoding
+        x = self.encoder(x)
+
+        # get `mu` and `log_var`
+        mu = x
+        log_var = x
+        # get the latent vector through reparameterization
+        z = self.reparameterize(mu, log_var)
+
+        # decoding
+        x = self.decoder(z)
+        reconstruction = torch.sigmoid(x)
         return reconstruction, mu, log_var

@@ -107,7 +107,7 @@ def fit(model, dataloader):
 def validate(model, dataloader):
     model.eval()
     running_loss = 0.0
-    savingIndex = 0;
+    savingIndex = 0
     with torch.no_grad():
         for i, data in tqdm(enumerate(dataloader), total=int(len(val_data)/dataloader.batch_size)):
             data, _ = data
@@ -128,6 +128,18 @@ def validate(model, dataloader):
     val_loss = running_loss/len(dataloader.dataset)
     return val_loss
 
+def save_model():
+  print('Saving the model')
+  # traced_model = torch.jit.trace(model.float(), torch.randn(1,3, 64, 64).to(device))
+  # torch.jit.save(traced_model, 'model-vae.pt')
+  torch.save(model, 'model-vae.pt')
+
+def load_model():
+  print('Loading the model')
+  # loadedModel = torch.jit.load('model-vae.pt')
+  loadedModel = torch.load('model-vae.pt')
+  return loadedModel
+
 train_loss = []
 val_loss = []
 for epoch in range(epochs):
@@ -138,3 +150,7 @@ for epoch in range(epochs):
     val_loss.append(val_epoch_loss)
     print(f"Train Loss: {train_epoch_loss:.4f}")
     print(f"Val Loss: {val_epoch_loss:.4f}")
+
+save_model()
+loaded_model = load_model()
+print(loaded_model)
