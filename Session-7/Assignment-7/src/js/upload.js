@@ -23,7 +23,7 @@ function gan(url) {
 		contentType: false
 	})
 	.done(function (response) {
-		responseJson = JSON.parse(response);
+		responseJson = response;
         console.log(responseJson);
 		if(responseJson.imagebytes){
 			if(responseJson.imagebytes.length > 1){
@@ -55,7 +55,7 @@ function vae(url) {
 		contentType: false
 	})
 	.done(function (response) {
-		responseJson = JSON.parse(response);
+		responseJson = response; // JSON.parse(response);
         console.log(responseJson);
 		if(responseJson.imagebytes){
 			if(responseJson.imagebytes.length > 1){
