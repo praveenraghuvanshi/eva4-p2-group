@@ -43,7 +43,7 @@ def generatefakeimage(event, context):
         print('### You are in handler generatefakeimage function')
         print('### event is : {}'.format(event))
         print('### Context is : {}'.format(context))
-        
+
         with torch.no_grad():
             model.eval()
             sample = torch.randn(32, 32).to(device)
@@ -54,7 +54,8 @@ def generatefakeimage(event, context):
         # Convert to numpy:
         im_np = sample[0].permute(1, 2, 0).numpy()
         pil_img = Image.fromarray((im_np).astype(np.uint8))
-        buff = BytesIO()
+        buff = io.BytesIO()
+        pil_img.save(buff, format="JPEG")
 
         new_image_string = base64.b64encode(buff.getvalue()).decode("utf-8")
         img_str = f"data:image/jpeg;base64,{new_image_string}"
