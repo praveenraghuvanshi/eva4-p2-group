@@ -17,7 +17,39 @@ function gan(url) {
 	$.ajax({
 		async: true,
 		crossDomain: true,
-		method: 'POST',
+		method: 'GET',
+		url: url,
+		processData: false,
+		contentType: false
+	})
+	.done(function (response) {
+		responseJson = JSON.parse(response);
+        console.log(responseJson);
+		if(responseJson.imagebytes){
+			if(responseJson.imagebytes.length > 1){
+				document.getElementById("ItemPreview").src = responseJson.imagebytes;
+				document.getElementById('result').textContent = '';
+			}
+			else{
+				document.getElementById('result').textContent = 'Got some junk Image !!!'
+			}
+		}
+		else{
+			document.getElementById('result').textContent = 'SORRY ;;;; Model didn\'t return anything !!!'
+		}
+	})
+	.fail(function (error) {
+		alert("There was an error while processing the model"); 
+		console.log(error);
+	});
+    
+}
+
+function vae(url) {
+	$.ajax({
+		async: true,
+		crossDomain: true,
+		method: 'GET',
 		url: url,
 		processData: false,
 		contentType: false

@@ -1,96 +1,64 @@
-print("Import START...")
 try:
+    print("### Import START...")
     import unzip_requirements
-except ImportError:
-    pass
-    
-from requests_toolbelt.multipart import decoder
+    from requests_toolbelt.multipart import decoder
 
-import torch
-import torch.nn as nn
+    import torch,base64,boto3,os,io,json,sys
 
-import os
-import io
-import base64
-import json
-import sys
-print("Import END...")
+    import torch.nn as nn
+    import numpy as np
+    from PIL import Image
+    from io import BytesIO
 
+    print('### Using Torch version :',torch.__version__)
+except Exception as e:
+    print('### Exception occured while importing modules : {}'.format(str(e)))
 
 # define env variables if there are not existing
-MODEL_PATH = 'netG_chkpt_1420.pth'
+S3_BUCKET   = os.environ['MODEL_BUCKET_NAME'] if 'MODEL_BUCKET_NAME' in os.environ else 'eva4p2bucket1'
+MODEL_PATH  = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 'model-vae.pt'
+print('### S3 Bkt is : {} \nModel path is : {}'.format(S3_BUCKET,MODEL_PATH))
 
-# Define generator
-class Generator(nn.Module):
-    """
-    Creates the Generator
+# Create client to AWS S3
+s3 = boto3.client('s3') 
 
-    nz (int): size of the latent z vector
-    ngf (int): number of feature maps for the generator
-    """
-    def __init__(self, nz: int = 64, ngf: int = 64):
-        super(Generator, self).__init__()
-        #self.ngpu = ngpu
-        self.main = nn.Sequential(
-            # input is Z, going into a convolution
-            nn.ConvTranspose2d( nz, ngf * 8, 4, 1, 0, bias=False),
-            nn.BatchNorm2d(ngf * 8),
-            nn.ReLU(True),
-            # state size. (ngf*8) x 4 x 4
-            nn.ConvTranspose2d(ngf * 8, ngf * 4, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf * 4),
-            nn.ReLU(True),
-            # state size. (ngf*4) x 8 x 8
-            nn.ConvTranspose2d( ngf * 4, ngf * 2, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf * 2),
-            nn.ReLU(True),
-            # state size. (ngf*2) x 16 x 16
-            nn.ConvTranspose2d( ngf * 2, ngf, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf),
-            nn.ReLU(True),
-            # state size. (ngf) x 32 x 32
-            nn.ConvTranspose2d( ngf, nc, 4, 2, 1, bias=False),
-            nn.Tanh()
-            # state size. (nc) x 64 x 64
-        )
-
-    def forward(self, input):
-        return self.main(input)
-        
-nz = 64;ngf = 64;nc = 3
-netG = Generator(nz, ngf).to(device)        
-
-def norm_ip(img, min, max):
-    img.clamp_(min=min, max=max)
-    img.add_(-min).div_(max - min + 1e-5)
-
-def norm_tensor(t):
-    norm_ip(t, float(t.min()), float(t.max()))
-    
-
-def dcGAN_car(event, context):
+def load_model_from_s3bkt():
     try:
-        content_type_header = event['headers']['content-type']
-        print('### Load Model : {}'.format(netG.load_state_dict(torch.load(MODEL_PATH,map_location=torch.device('cpu')))))
+        obj         = s3.get_object(Bucket = S3_BUCKET, Key = MODEL_PATH)
+        bytestream  = io.BytesIO(obj['Body'].read())
+        print('### Loading model...')
+        print(f'Model Size: {sys.getsizeof(bytestream) // (1024 * 1024)}')
+        model = torch.jit.load(bytestream, map_location=torch.device('cpu'))
+        print('### Model is loaded and returning model')
+        return model
+    except Exception as e:
+        print('### Exception in loading a model : {}'.format(str(e)))
+        raise(e)
 
+model   = load_model_from_s3bkt()
+device  = 'cpu'
+
+def generatefakeimage(event, context):
+    try:
+        print('### You are in handler generatefakeimage function')
+        print('### event is : {}'.format(event))
+        print('### Context is : {}'.format(context))
+        
         with torch.no_grad():
-            fake = netG(torch.randn(1, 64, 1, 1).to(device)).detach().cpu()
-            
-        fakei = fake[0]
-        norm_tensor(fakei)
-        print('### fakei is :',fakei)
+            model.eval()
+            sample = torch.randn(32, 32).to(device)
+            sample = model.decoder(sample).cpu()
+            print(sample.shape)
+            sample = sample.view(-1, 3, 64, 64)[:1]
         
-        s6Img = fakei.numpy()
-        print('s6Img shape ',s6Img.shape)
-        img_chw = s6Img.reshape(64,64,3)
-        img_chw = np.float32(img_chw)/255.0
-        print('img_chw shape',img_chw.shape)
-        type(img_chw)
-        img_str = f"data:image/jpeg;base64,{base64.b64encode(img_chw.tobytes())}"
+        # Convert to numpy:
+        im_np = sample[0].permute(1, 2, 0).numpy()
+        pil_img = Image.fromarray((im_np).astype(np.uint8))
+        buff = BytesIO()
 
-        print(img_str)
-        
-        print('BODY Loaded')
+        new_image_string = base64.b64encode(buff.getvalue()).decode("utf-8")
+        img_str = f"data:image/jpeg;base64,{new_image_string}"
+        print('### Final Image String is : \n\t{}'.format(img_str))
 
         return {
             "statusCode": 200,
