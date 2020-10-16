@@ -16,7 +16,13 @@
 
 ## Result
 
+### SRGAN
+
 <img src="assets\SRGAN-output.png" style="zoom:80%;" />
+
+### Neural Style Transfer
+
+<img src="assets\neural-style-transfer.png" alt="Neural Style Transfer" style="zoom:80%;" />
 
 ## Source
 
