@@ -244,6 +244,31 @@ function nst(url){
 	});
 };
 
+function sentiment(url){
+	var sentimentText = document.getElementById('txtSentiment').value;
+	if(!sentimentText.length){
+		return alert('Please enter some text');
+	}
+	
+	console.log(sentimentText);
+	console.log(url);
+	console.log('Processing...');
 
-
-//$('#btnResNetUpload').click(uploadAndClassifyImage);
+	document.getElementById('result').textContent = 'Processing...';
+    $.ajax({
+		async: true,
+		crossDomain: true,
+		method: 'POST',
+		url: url,
+		data: sentimentText
+	})
+	.done(function (response) {
+		responseJson = JSON.parse(response);
+		console.log(responseJson);
+		document.getElementById('result').textContent = responseJson;
+	})
+	.fail(function (error) {
+		alert("There was an error while processing the text"); 
+		console.log(error);
+	});
+};
