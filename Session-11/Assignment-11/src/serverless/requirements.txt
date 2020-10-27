@@ -1,0 +1,3 @@
+https://download.pytorch.org/whl/cpu/torch-1.5.0%2Bcpu-cp38-cp38-linux_x86_64.whl
+https://files.pythonhosted.org/packages/c6/bc/b28b9efb4653c03e597ed207264eea45862b5260f48e9f010b5068d64db1/torchtext-0.3.1-py3-none-any.whl
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz#egg=en_core_web_sm==2.3.1
