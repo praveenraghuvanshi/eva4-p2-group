@@ -69,6 +69,12 @@
 					<input type="text" id="txtSentiment">
 					<input type="button" id="btnSentiment" onclick="sentiment('https://bwzba5uckh.execute-api.ap-south-1.amazonaws.com/dev/nlp')" class="btn btn-primary btn-block" value="Sentiment Analysis">
 				</div>
+				</br>
+				<div class="large-8 cell">
+					<label>Enter Sentence in German: </label>
+					<input type="text" id="txtTranslate">
+					<input type="button" id="btnTranslate" onclick="translate('https://bwzba5uckh.execute-api.ap-south-1.amazonaws.com/dev/nlp')" class="btn btn-primary btn-block" value="Translation">
+				</div>
 				<div>
 					<h4>Result:</h4>
 					<p id="result"></p>

@@ -1,4 +1,4 @@
-service: sentimentanalysis
+service: translation
 
 provider:
     name: aws
@@ -10,8 +10,9 @@ provider:
 
     environment:
         MODEL_BUCKET_NAME: eva4p2bucket1
-        MODEL_FILE_NAME_KEY: s9_wordembeddings.pt
-        MODEL_FILE_OBJ: s9_wordemb_text_vocab_1.pkl
+        MODEL_FILE_NAME_KEY: s11-tranlation.pt
+        SRC: SRC.pkl
+        TRG: TRG.pkl
     iamRoleStatements:
         - Effect: "Allow"
           Action:
@@ -49,7 +50,7 @@ package:
         
 functions:
     main_handler:
-        handler: handler.cnn_sentiment_pred
+        handler: handler.translation
         memorySize: 3008
         timeout: 60
         events:

@@ -272,3 +272,32 @@ function sentiment(url){
 		console.log(error);
 	});
 };
+
+function translate(url){
+	var germanText = document.getElementById('txtTranslate').value;
+	if(!germanText.length){
+		return alert('Please enter some text');
+	}
+	
+	console.log(germanText);
+	console.log(url);
+	console.log('Processing...');
+
+	document.getElementById('result').textContent = 'Processing...';
+    $.ajax({
+		async: true,
+		crossDomain: true,
+		method: 'POST',
+		url: url,
+		data: germanText
+	})
+	.done(function (response) {
+		responseJson = JSON.parse(response);
+		console.log(responseJson);
+		document.getElementById('result').textContent = responseJson;
+	})
+	.fail(function (error) {
+		alert("There was an error while processing the text"); 
+		console.log(error);
+	});
+};
