@@ -249,23 +249,41 @@ function sentiment(url){
 	if(!sentimentText.length){
 		return alert('Please enter some text');
 	}
+
+	var sentimentData = {
+		writtenMovieReview : sentimentText
+	}
 	
-	console.log(sentimentText);
+	console.log(sentimentData);
 	console.log(url);
 	console.log('Processing...');
+	console.log(JSON.stringify(sentimentData));	
 
 	document.getElementById('result').textContent = 'Processing...';
+	
     $.ajax({
 		async: true,
 		crossDomain: true,
 		method: 'POST',
 		url: url,
-		data: sentimentText
+		dataType: 'json',
+		contentType: 'application/json',
+
+		data: JSON.stringify(sentimentData)
 	})
 	.done(function (response) {
-		responseJson = JSON.parse(response);
-		console.log(responseJson);
-		document.getElementById('result').textContent = responseJson;
+		var result = document.getElementById('result');
+		result.textContent = response.sentiment;
+
+		if(response.sentiment === "Positive"){
+			result.style.color = "green";
+		}
+		else if(response.sentiment === "Negative"){
+			result.style.color = "red";
+		}
+		else{
+			result.style.color = "yellow";
+		}
 	})
 	.fail(function (error) {
 		alert("There was an error while processing the text"); 

@@ -17,8 +17,15 @@
 
 ## Result
 
-* ![positive](https://github.com/sumankanukollu/suman_cnn/raw/master/sessions/s9_sentimentAnalysis/snippets/s9_possitiveReview.JPG)
-* ![Negative](https://github.com/sumankanukollu/suman_cnn/raw/master/sessions/s9_sentimentAnalysis/snippets/s9_negativeReview.JPG)
+* <img src="assets\s9_possitiveReview.png" alt="positive" style="zoom:100%;" />
+
+* <img src="assets\positive.png" alt="positive" style="zoom:100%;" />
+
+* <img src="assets\s9_negativeReview.png" alt="positive" style="zoom:100%;" />
+
+* <img src="assets\negative.png" alt="positive" style="zoom:100%;" />
+
+  
 
 ## Source
 
