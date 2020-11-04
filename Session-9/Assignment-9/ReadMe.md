@@ -17,15 +17,13 @@
 
 ## Result
 
-* <img src="assets\s9_possitiveReview.png" alt="positive" style="zoom:100%;" />
+<img src="assets\s9_possitiveReview.png" alt="positive" style="zoom:100%;" />
 
-* <img src="assets\positive.png" alt="positive" style="zoom:100%;" />
+<img src="assets\positive.png" alt="positive" style="zoom:100%;" />
 
-* <img src="assets\s9_negativeReview.png" alt="positive" style="zoom:100%;" />
+<img src="assets\s9_negativeReview.png" alt="positive" style="zoom:100%;" />
 
-* <img src="assets\negative.png" alt="positive" style="zoom:100%;" />
-
-  
+<img src="assets\negative.png" alt="positive" style="zoom:100%;" />  
 
   
 
