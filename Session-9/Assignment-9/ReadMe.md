@@ -5,7 +5,8 @@
 - Praveen Raghuvanshi (praveenraghuvanshi@gmail.com)
 - Tusharkanta Biswal (Tusharkanta_biswal@stragure.com)
 - Suman Kanukollu (sumankanukollu@gmail.com)
-- Shubham Kothawade (kothawadeshub@gmail.com)
+
+  
 
 ## Resources
 
@@ -16,7 +17,8 @@
 
 ## Result
 
-
+* ![positive](https://github.com/sumankanukollu/suman_cnn/raw/master/sessions/s9_sentimentAnalysis/snippets/s9_possitiveReview.JPG)
+* ![Negative](https://github.com/sumankanukollu/suman_cnn/raw/master/sessions/s9_sentimentAnalysis/snippets/s9_negativeReview.JPG)
 
 ## Source
 
