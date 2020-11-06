@@ -3,26 +3,27 @@ try:
     import unzip_requirements
     import base64,boto3,os,io,json,sys
 
+    import numpy as np
+
     import torch
     import torch.nn as nn
     import torch.nn.functional as F
-    from torchtext import data
-    import random,pickle
-    import numpy as np
-
-    from model import *
-
-    from io import BytesIO
+    from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
     import spacy
     import dill
+
+    from io import BytesIO
+
+    from model import EncoderDecoder, Generator, Encoder, Decoder, BahdanauAttention
+
     print('### Using Torch version :',torch.__version__)
 except Exception as e:
     print('### Exception occurred while importing modules : {}'.format(str(e)))
 
 # define env variables if there are not existing
 S3_BUCKET   = os.environ['MODEL_BUCKET_NAME'] if 'MODEL_BUCKET_NAME' in os.environ else 'eva4p2bucket1'
-MODEL_PATH  = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 's11-tranlation.pt'
+MODEL_PATH  = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 's11-translation.pt'
 SRC  = os.environ['SRC'] if 'SRC' in os.environ else 'SRC.pkl'
 TRG  = os.environ['TRG'] if 'TRG' in os.environ else 'TRG.pkl'
 print('### S3 Bkt is : {} \nModel path is : {}'.format(S3_BUCKET,MODEL_PATH))
@@ -32,16 +33,40 @@ print(f'### Device is : {device}')
 
 s3 = boto3.client('s3')
 
+UNK_TOKEN = "<unk>"
+PAD_TOKEN = "<pad>"    
+SOS_TOKEN = "<s>"
+EOS_TOKEN = "</s>"
+LOWER = True
+num_words = 11
+USE_CUDA = torch.cuda.is_available()
+
+def make_model(src_vocab, tgt_vocab, emb_size=256, hidden_size=512, num_layers=1, dropout=0.1):
+    "Helper: Construct a model from hyperparameters."
+
+    attention = BahdanauAttention(hidden_size)
+
+    model = EncoderDecoder(
+        Encoder(emb_size, hidden_size, num_layers=num_layers, dropout=dropout),
+        Decoder(emb_size, hidden_size, attention, num_layers=num_layers, dropout=dropout),
+        nn.Embedding(src_vocab, emb_size),
+        nn.Embedding(tgt_vocab, emb_size),
+        Generator(hidden_size, tgt_vocab))
+
+    return model.cuda() if USE_CUDA else model
+
+model = make_model(num_words, num_words, emb_size=32, hidden_size=64)
+
 def load_model_from_s3bkt():
     try:
         obj         = s3.get_object(Bucket = S3_BUCKET, Key = MODEL_PATH)
         bytestream  = io.BytesIO(obj['Body'].read())
         print('### Loading model...')
         print(f'Model Size: {sys.getsizeof(bytestream) // (1024 * 1024)}')
-        model = torch.load(bytestream,map_location=torch.device('cpu'))
+        model_ckpnt = torch.load(bytestream,map_location=torch.device('cpu'))
         print('### Model in eval mode : {}'.format(model.eval()))        
         print('### Model is loaded and returning model')
-        return model
+        return model_ckpnt
     except Exception as e:
         print('### Exception in loading a model : {}'.format(str(e)))
         raise(e)
@@ -67,16 +92,14 @@ def load_src_trg():
         print('### Exception in loading a model : {}'.format(str(e)))
         raise(e)
 
-model   = load_model_from_s3bkt()
+model_ckpnt   = load_model_from_s3bkt()
+model.load_state_dict(model_ckpnt) 
+model.eval()
+print(model)
+
 (SRC, TRG) = load_src_trg()
+spacy_de = spacy.load('de')
 
-UNK_TOKEN = "<unk>"
-PAD_TOKEN = "<pad>"    
-SOS_TOKEN = "<s>"
-EOS_TOKEN = "</s>"
-
-device = 'cpu'
-DEVICE = 'cpu'
 print('Import End....')
 
 seed = 42
@@ -167,6 +190,11 @@ def translator(event, context):
         result = translate(model,input,spacy_de,SRC,device)
         response = {
             "statusCode": 200,
+            "headers": {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Credentials": True
+            },
             "body": json.dumps({"input": input , "output":result})
         }
 

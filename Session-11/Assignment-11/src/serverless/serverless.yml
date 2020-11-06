@@ -10,7 +10,7 @@ provider:
 
     environment:
         MODEL_BUCKET_NAME: eva4p2bucket1
-        MODEL_FILE_NAME_KEY: s11-tranlation.pt
+        MODEL_FILE_NAME_KEY: s11-translation.pt
         SRC: SRC.pkl
         TRG: TRG.pkl
     iamRoleStatements:
@@ -55,7 +55,7 @@ functions:
         timeout: 60
         events:
             - http:
-                path: nlp
+                path: translate
                 method: post
                 cors: true
 
