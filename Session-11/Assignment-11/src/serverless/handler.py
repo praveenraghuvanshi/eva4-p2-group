@@ -12,10 +12,11 @@ try:
 
     import spacy
     import dill
+    import torchtext
 
     from io import BytesIO
 
-    from model import EncoderDecoder, Generator, Encoder, Decoder, BahdanauAttention
+    from models import EncoderDecoder, Generator, Encoder, Decoder, BahdanauAttention
 
     print('### Using Torch version :',torch.__version__)
 except Exception as e:
@@ -24,8 +25,8 @@ except Exception as e:
 # define env variables if there are not existing
 S3_BUCKET   = os.environ['MODEL_BUCKET_NAME'] if 'MODEL_BUCKET_NAME' in os.environ else 'eva4p2bucket1'
 MODEL_PATH  = os.environ['MODEL_FILE_NAME_KEY'] if 'MODEL_FILE_NAME_KEY' in os.environ else 's11-translation.pt'
-SRC  = os.environ['SRC'] if 'SRC' in os.environ else 'SRC.pkl'
-TRG  = os.environ['TRG'] if 'TRG' in os.environ else 'TRG.pkl'
+SRC_PKL  = os.environ['SRC'] if 'SRC' in os.environ else 'SRC.pkl'
+TRG_PKL  = os.environ['TRG'] if 'TRG' in os.environ else 'TRG.pkl'
 print('### S3 Bkt is : {} \nModel path is : {}'.format(S3_BUCKET,MODEL_PATH))
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -73,14 +74,14 @@ def load_model_from_s3bkt():
 
 def load_src_trg():
     try:
-        obj         = s3.get_object(Bucket = S3_BUCKET, Key = SRC)
+        obj         = s3.get_object(Bucket = S3_BUCKET, Key = SRC_PKL)
         bytestream  = io.BytesIO(obj['Body'].read())
         print('### Loading model...')
         print(f'Model Size: {sys.getsizeof(bytestream) // (1024 * 1024)}')
         SRC = torch.load(bytestream, pickle_module=dill)       
         print('### SRC is loaded')
 
-        obj         = s3.get_object(Bucket = S3_BUCKET, Key = TRG)
+        obj         = s3.get_object(Bucket = S3_BUCKET, Key = TRG_PKL)
         bytestream  = io.BytesIO(obj['Body'].read())
         print('### Loading model...')
         print(f'Model Size: {sys.getsizeof(bytestream) // (1024 * 1024)}')
@@ -93,9 +94,8 @@ def load_src_trg():
         raise(e)
 
 model_ckpnt   = load_model_from_s3bkt()
-model.load_state_dict(model_ckpnt) 
-model.eval()
-print(model)
+# model.load_state_dict(model_ckpnt) 
+model = model_ckpnt
 
 (SRC, TRG) = load_src_trg()
 spacy_de = spacy.load('de')

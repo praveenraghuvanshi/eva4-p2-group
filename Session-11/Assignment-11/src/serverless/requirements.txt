@@ -1,4 +1,5 @@
 https://download.pytorch.org/whl/cpu/torch-1.5.0%2Bcpu-cp38-cp38-linux_x86_64.whl
 dill==0.3.2
 spacy==2.2.4
+torchtext==0.3.1
 # https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.0.0a0/de_core_news_sm-3.0.0a0.tar.gz
