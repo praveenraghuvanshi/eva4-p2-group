@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import math, copy, time
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 
@@ -41,6 +42,7 @@ class Generator(nn.Module):
     def forward(self, x):
         return F.log_softmax(self.proj(x), dim=-1)
 
+
 class Encoder(nn.Module):
     """Encodes a sequence of word embeddings"""
     def __init__(self, input_size, hidden_size, num_layers=1, dropout=0.):
@@ -65,6 +67,7 @@ class Encoder(nn.Module):
         final = torch.cat([fwd_final, bwd_final], dim=2)  # [num_layers, batch, 2*dim]
 
         return output, final
+
 
 class Decoder(nn.Module):
     """A conditional RNN decoder with attention."""
@@ -190,3 +193,4 @@ class BahdanauAttention(nn.Module):
         
         # context shape: [B, 1, 2D], alphas shape: [B, 1, M]
         return context, alphas
+

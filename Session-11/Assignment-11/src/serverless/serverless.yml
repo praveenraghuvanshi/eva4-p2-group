@@ -1,63 +1,31 @@
-service: translation
+service: s11g2e-test
 
 provider:
-    name: aws
-    runtime: python3.8
-    stage: dev
-    region: ap-south-1
-    timeout: 60
-    versionFunctions: false
+  name: aws
+  runtime: python3.6
+  stage: dev
+  region: ap-south-1
+  timeout: 60
+  environment:
+    S3_BUCKET: suman-p2-bucket
+    SRC_FIELD: SRC_fields.pkl
+    TRG_FIELD: TRG_fields.pkl
+    MODEL_PATH: s11-german2EnglishText-encoder-decoder-full-cpu-stdict.pt
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:getObject
+      Resource: arn:aws:s3:::suman-p2-bucket/*
 
-    environment:
-        MODEL_BUCKET_NAME: eva4p2bucket1
-        MODEL_FILE_NAME_KEY: s11-translation.pt
-        SRC: SRC.pkl
-        TRG: TRG.pkl
-    iamRoleStatements:
-        - Effect: "Allow"
-          Action:
-            - s3:getObject
-          Resource: arn:aws:s3:::eva4p2bucket1/*
-custom:
-    pythonRequirements:
-        dockerizePip: true
-        zip: true
-        slim: true
-        strip: false
-        noDeploy:
-            - docutils
-            - jmespath
-            - pip
-            - python-dateutil
-            - setuptools
-            - six
-            - tensorboard
-        useStaticCache: true
-        useDonwloadCache: true
-        cacheLocation: "./cache"
-        
-package:
-    individually: false
-    exclude:
-        - package.json
-        - package-log.json
-        - node_modules/**
-        - cache/**
-        - test/**
-        - __pycache__/**
-        - .pytest_cache/**
-        - model/**
-        
 functions:
-    main_handler:
-        handler: handler.translation
-        memorySize: 3008
-        timeout: 60
-        events:
-            - http:
-                path: translate
-                method: post
-                cors: true
-
-plugins:
-  - serverless-python-requirements
+  translateg2e:
+    handler: handler.translateg2e
+    memorySize: 3008
+    timeout: 60
+    events:
+      - http:
+          path: translate
+          method: post
+          cors: true
+    layers:
+      - arn:aws:lambda:ap-south-1:936131757702:layer:gp-torchtext-spacy-pytorch-layer:2
