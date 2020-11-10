@@ -273,13 +273,17 @@ function sentiment(url){
 	});
 };
 
-function translate(url){
-	var germanText = document.getElementById('txtTranslate').value;
-	if(!germanText.length){
+function translation(url){
+	var inputText = document.getElementById('txtTranslate').value;
+	if(!inputText.length){
 		return alert('Please enter some text');
 	}
+
+	var translationData = {
+		germanText : inputText
+	}
 	
-	console.log(germanText);
+	console.log(translationData);
 	console.log(url);
 	console.log('Processing...');
 
@@ -289,15 +293,14 @@ function translate(url){
 		crossDomain: true,
 		method: 'POST',
 		url: url,
-		data: germanText
+		data: JSON.stringify(translationData)
 	})
 	.done(function (response) {
-		responseJson = JSON.parse(response);
-		console.log(responseJson);
-		document.getElementById('result').textContent = responseJson;
+		console.log(response);
+		document.getElementById('result').textContent = response.output;
 	})
 	.fail(function (error) {
 		alert("There was an error while processing the text"); 
 		console.log(error);
 	});
-};
+}
