@@ -15,6 +15,14 @@
 
 ## Result
 
+### Output
+
+**Input text:** mein vater hörte sich auf seinem kleinen , grauen radio die der bbc an .
+
+**Translated Text:** my father stopped on his little bit gray , gray radio the bbc bbc .
+
+<img src="assets\translation-result.png" alt="Translated Result" style="zoom:80%;" />
+
 ### Performance
 
 <img src="assets\attention-model-performance.png" alt="Attention Model Performance" style="zoom:80%;" />
