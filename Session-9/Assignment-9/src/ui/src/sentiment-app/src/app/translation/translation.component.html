@@ -1,0 +1,11 @@
+<div class="large-8 cell">
+  <h1>Plese enter a sentence in German: </h1>
+  <input #germantextbox type="text" [(ngModel)]="germanSentence" required>  
+  <h4>Input Text:</h4><span>{{germanSentence}}</span>
+  <br><br>
+  <button (click)="translate(germantextbox.value)">Translate</button>
+  <div *ngIf="translatedText !== ''">
+    <h1>Translated Text :</h1>
+    <span>{{translatedText}}</span>
+  </div>  
+</div>

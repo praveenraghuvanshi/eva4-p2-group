@@ -31,3 +31,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Resources
 - [Getting Started With Serverless Angular Universal on AWS Lambda](https://medium.com/better-programming/getting-started-with-serverless-angular-universal-on-aws-lambda-8754bcc4dc19)
+
+## Known Issues
+- https://stackoverflow.com/questions/60877539/aws-serverless-lambda-angular-typeerror-express-is-not-a-function

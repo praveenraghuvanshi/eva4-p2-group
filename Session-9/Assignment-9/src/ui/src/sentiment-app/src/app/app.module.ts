@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
+import { FormsModule } from '@angular/forms';
+import { TranslationComponent } from './translation/translation.component';
 import { FirstComponent } from './first/first.component';
 import { SecondComponent } from './second/second.component';
 import { MenuComponent } from './menu/menu.component';
@@ -14,7 +16,8 @@ import { NgtUniversalModule } from '@ng-toolkit/universal';
       AppComponent,
       FirstComponent,
       SecondComponent,
-      MenuComponent
+      MenuComponent,
+      TranslationComponent
    ],
    imports: [
       BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -22,7 +25,8 @@ import { NgtUniversalModule } from '@ng-toolkit/universal';
       HttpClientModule,
       CommonModule,
       TransferHttpCacheModule,
-      NgtUniversalModule
+      NgtUniversalModule,
+      FormsModule
    ],
    providers: [],
    bootstrap: [AppComponent]

@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
    selector: 'app-menu',
    template: `
       <ul>
-         <li><a routerLink="firstComponent">First component</a></li>
-         <li><a routerLink="secondComponent">Second component</a></li>
+         <li><a routerLink="translationComponent">German -> English</a></li>
       </ul>
    `,
    styles: [`
