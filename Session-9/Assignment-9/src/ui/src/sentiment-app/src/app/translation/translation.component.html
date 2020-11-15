@@ -1,11 +1,16 @@
-<div class="large-8 cell">
-  <h1>Plese enter a sentence in German: </h1>
-  <input #germantextbox type="text" [(ngModel)]="germanSentence" required>  
-  <h4>Input Text:</h4><span>{{germanSentence}}</span>
-  <br><br>
-  <button (click)="translate(germantextbox.value)">Translate</button>
+<div class="jumbotron container">
+  <h1 class="display-4">German to English Translator</h1>
+  <hr class="my-4">
+  <div>
+    <p>Plese enter a sentence in German: </p>
+    <input #germantextbox type="text" [(ngModel)]="germanSentence" required>  
+    <p class="lead">{{germanSentence}}</p>
+    <p class="lead" *ngIf="germanSentence !== ''">
+      <button class="btn btn-primary" (click)="translate(germantextbox.value)">Translate</button>
+    </p>
+  </div>  
   <div *ngIf="translatedText !== ''">
-    <h1>Translated Text :</h1>
+    <p class="lead">Translated Text :</p>
     <span>{{translatedText}}</span>
   </div>  
 </div>
