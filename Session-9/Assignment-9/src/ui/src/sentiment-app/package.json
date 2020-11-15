@@ -70,7 +70,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "opencollective": "^1.0.3",
     "protractor": "~5.4.0",
-    "serverless": "^1.60.0",
+    "serverless": "^2.11.1",
     "serverless-apigw-binary": "^0.4.4",
     "ts-loader": "^6.2.1",
     "ts-node": "~7.0.0",
