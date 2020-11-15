@@ -38,11 +38,10 @@ Pred:  my father was focused on his little , gray radio the <unk> of the bbc .
 
 ## Source
 
-**[index.html](src/index.html)**
+Server : 
 
-**[upload.js](src/js/upload.js)**
+- [handler.py](src/serverless/handler.py)
 
-**[handler.py](src/serverless/handler.py)**
+- [serverless.yml](src/serverless/serverless.yml)
 
-**[serverless.yml](src/serverless/serverless.yml)**
-
+Frontend : [App](src/ui)
