@@ -6,10 +6,10 @@
     <input #germantextbox type="text" [(ngModel)]="germanSentence" required>  
     <p class="lead">{{germanSentence}}</p>
     <p class="lead" *ngIf="germanSentence !== ''">
-      <button class="btn btn-primary" (click)="translate(germantextbox.value)">Translate</button>
+      <button class="btn btn-secondary" (click)="translate(germantextbox.value)">Translate</button>
     </p>
     <div class="progress" *ngIf="isProcessing === true">
-      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
+      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
     </div>
   </div>  
   <div *ngIf="translatedText !== ''">
