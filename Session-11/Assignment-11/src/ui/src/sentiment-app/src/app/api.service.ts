@@ -17,4 +17,14 @@ export class ApiService {
     JSON.stringify(translationData));
     return response;
  }
+
+ public generateCaption(image: File): Observable<any> {
+   console.log('Before image captioning: ' + image);
+   const formData = new FormData();
+   formData.append('image', image);
+
+   var response = this.httpClient.post<any>('https://k4n27qf9bc.execute-api.ap-south-1.amazonaws.com/dev/classify',
+   formData);
+   return response;
+}
 }

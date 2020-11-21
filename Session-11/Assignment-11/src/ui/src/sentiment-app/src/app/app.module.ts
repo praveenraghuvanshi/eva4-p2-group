@@ -8,10 +8,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { TransferHttpCacheModule } from '@nguniversal/common';
 import { NgtUniversalModule } from '@ng-toolkit/universal';
+import { ImagecaptionComponent } from './imagecaption/imagecaption.component';
 @NgModule({
    declarations: [
       AppComponent,
-      TranslationComponent
+      TranslationComponent,
+      ImagecaptionComponent
    ],
    imports: [
       BrowserModule.withServerTransition({ appId: 'serverApp' }),
