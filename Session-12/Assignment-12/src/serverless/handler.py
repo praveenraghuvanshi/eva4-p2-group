@@ -10,12 +10,13 @@ try:
 
     import numpy as np
 
+    print('### Import basic completed')
     import torch
     import torch.nn.functional as F
     import torchvision.transforms as transforms
-
+    
+    print('### Import torch completed')
     import skimage.transform
-    import argparse
     from scipy.misc import imread, imresize
     from PIL import Image    
     

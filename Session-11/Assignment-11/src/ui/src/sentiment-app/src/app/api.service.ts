@@ -23,7 +23,7 @@ export class ApiService {
    const formData = new FormData();
    formData.append('image', image);
 
-   var response = this.httpClient.post<any>('https://k4n27qf9bc.execute-api.ap-south-1.amazonaws.com/dev/classify',
+   var response = this.httpClient.post<any>('https://rr2vkeo8od.execute-api.ap-south-1.amazonaws.com/dev/caption',
    formData);
    return response;
 }
