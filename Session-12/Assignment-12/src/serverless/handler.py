@@ -1,393 +1,242 @@
 try:
     print('### Import started')
-    import unzip_requirements
-    import json,boto3,os,tarfile,io,base64,json,pickle
+    import boto3
+    import os
+    import io
+    import base64
+    import json
+    import sys
     from requests_toolbelt.multipart import decoder
 
-    import torch
-    import torch.nn as nn
-    import torch.nn.functional as F
-    from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
-
-
-    import spacy
-    import de_core_news_sm
-
-    import dill
-    import random
     import numpy as np
+
+    import torch
+    import torch.nn.functional as F
+    import torchvision.transforms as transforms
+
+    import skimage.transform
+    import argparse
+    from scipy.misc import imread, imresize
+    from PIL import Image    
     
-    
-    #from modelsUtility import *
     print('### Import End....')
 except ImportError:
     print('### Exception occurred in import')
 
-
-device = 'cpu'
-DEVICE = 'cpu'
-UNK_TOKEN = "<unk>"
-PAD_TOKEN = "<pad>"    
-SOS_TOKEN = "<s>"
-EOS_TOKEN = "</s>"
-LOWER = True
-num_words = 11
-
-seed = 1234
-np.random.seed(seed)
-torch.manual_seed(seed)
-
+S3_BUCKET  = os.environ['S3_BUCKET'] if 'S3_BUCKET' in os.environ else 'eva4p2bucket1'
+MODEL_PATH = os.environ['MODEL_PATH'] if 'MODEL_PATH' in os.environ else 'model-caption.pth.tar'
+print(f'### model path : {MODEL_PATH}')
 
 ##############
 # Define classes and methods:
 ##############
-class EncoderDecoder(nn.Module):
+def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=3):
     """
-    A standard Encoder-Decoder architecture. Base for this and many 
-    other models.
+    Reads an image and captions it with beam search.
+
+    :param encoder: encoder model
+    :param decoder: decoder model
+    :param image_path: path to image
+    :param word_map: word map
+    :param beam_size: number of sequences to consider at each decode-step
+    :return: caption, weights for visualization
     """
-    def __init__(self, encoder, decoder, src_embed, trg_embed, generator):
-        super(EncoderDecoder, self).__init__()
-        self.encoder = encoder
-        self.decoder = decoder
-        self.src_embed = src_embed
-        self.trg_embed = trg_embed
-        self.generator = generator
-        
-    def forward(self, src, trg, src_mask, trg_mask, src_lengths, trg_lengths):
-        """Take in and process masked src and target sequences."""
-        encoder_hidden, encoder_final = self.encode(src, src_mask, src_lengths)
-        return self.decode(encoder_hidden, encoder_final, src_mask, trg, trg_mask)
-    
-    def encode(self, src, src_mask, src_lengths):
-        return self.encoder(self.src_embed(src), src_mask, src_lengths)
-    
-    def decode(self, encoder_hidden, encoder_final, src_mask, trg, trg_mask,
-               decoder_hidden=None):
-        return self.decoder(self.trg_embed(trg), encoder_hidden, encoder_final,
-                            src_mask, trg_mask, hidden=decoder_hidden)
-        
 
-class Generator(nn.Module):
-    """Define standard linear + softmax generation step."""
-    def __init__(self, hidden_size, vocab_size):
-        super(Generator, self).__init__()
-        self.proj = nn.Linear(hidden_size, vocab_size, bias=False)
+    k = beam_size
+    vocab_size = len(word_map)
 
-    def forward(self, x):
-        return F.log_softmax(self.proj(x), dim=-1)
+    # Read image and process
+    img = imread(image_path)
+    if len(img.shape) == 2:
+        img = img[:, :, np.newaxis]
+        img = np.concatenate([img, img, img], axis=2)
+    img = imresize(img, (256, 256))
+    img = img.transpose(2, 0, 1)
+    img = img / 255.
+    img = torch.FloatTensor(img).to(device)
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+    transform = transforms.Compose([normalize])
+    image = transform(img)  # (3, 256, 256)
 
+    # Encode
+    image = image.unsqueeze(0)  # (1, 3, 256, 256)
+    encoder_out = encoder(image)  # (1, enc_image_size, enc_image_size, encoder_dim)
+    enc_image_size = encoder_out.size(1)
+    encoder_dim = encoder_out.size(3)
 
-class Encoder(nn.Module):
-    """Encodes a sequence of word embeddings"""
-    def __init__(self, input_size, hidden_size, num_layers=1, dropout=0.):
-        super(Encoder, self).__init__()
-        self.num_layers = num_layers
-        self.rnn = nn.GRU(input_size, hidden_size, num_layers, 
-                          batch_first=True, bidirectional=True, dropout=dropout)
-        
-    def forward(self, x, mask, lengths):
-        """
-        Applies a bidirectional GRU to sequence of embeddings x.
-        The input mini-batch x needs to be sorted by length.
-        x should have dimensions [batch, time, dim].
-        """
-        packed = pack_padded_sequence(x, lengths, batch_first=True)
-        output, final = self.rnn(packed)
-        output, _ = pad_packed_sequence(output, batch_first=True)
+    # Flatten encoding
+    encoder_out = encoder_out.view(1, -1, encoder_dim)  # (1, num_pixels, encoder_dim)
+    num_pixels = encoder_out.size(1)
 
-        # we need to manually concatenate the final states for both directions
-        fwd_final = final[0:final.size(0):2]
-        bwd_final = final[1:final.size(0):2]
-        final = torch.cat([fwd_final, bwd_final], dim=2)  # [num_layers, batch, 2*dim]
+    # We'll treat the problem as having a batch size of k
+    encoder_out = encoder_out.expand(k, num_pixels, encoder_dim)  # (k, num_pixels, encoder_dim)
 
-        return output, final
+    # Tensor to store top k previous words at each step; now they're just <start>
+    k_prev_words = torch.LongTensor([[word_map['<start>']]] * k).to(device)  # (k, 1)
 
+    # Tensor to store top k sequences; now they're just <start>
+    seqs = k_prev_words  # (k, 1)
 
-class Decoder(nn.Module):
-    """A conditional RNN decoder with attention."""
-    
-    def __init__(self, emb_size, hidden_size, attention, num_layers=1, dropout=0.5,
-                 bridge=True):
-        super(Decoder, self).__init__()
-        
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.attention = attention
-        self.dropout = dropout
-                 
-        self.rnn = nn.GRU(emb_size + 2*hidden_size, hidden_size, num_layers,
-                          batch_first=True, dropout=dropout)
-                 
-        # to initialize from the final encoder state
-        self.bridge = nn.Linear(2*hidden_size, hidden_size, bias=True) if bridge else None
+    # Tensor to store top k sequences' scores; now they're just 0
+    top_k_scores = torch.zeros(k, 1).to(device)  # (k, 1)
 
-        self.dropout_layer = nn.Dropout(p=dropout)
-        self.pre_output_layer = nn.Linear(hidden_size + 2*hidden_size + emb_size,
-                                          hidden_size, bias=False)
-        
-    def forward_step(self, prev_embed, encoder_hidden, src_mask, proj_key, hidden):
-        """Perform a single decoder step (1 word)"""
+    # Tensor to store top k sequences' alphas; now they're just 1s
+    seqs_alpha = torch.ones(k, 1, enc_image_size, enc_image_size).to(device)  # (k, 1, enc_image_size, enc_image_size)
 
-        # compute context vector using attention mechanism
-        query = hidden[-1].unsqueeze(1)  # [#layers, B, D] -> [B, 1, D]
-        context, attn_probs = self.attention(
-            query=query, proj_key=proj_key,
-            value=encoder_hidden, mask=src_mask)
+    # Lists to store completed sequences, their alphas and scores
+    complete_seqs = list()
+    complete_seqs_alpha = list()
+    complete_seqs_scores = list()
 
-        # update rnn hidden state
-        rnn_input = torch.cat([prev_embed, context], dim=2)
-        output, hidden = self.rnn(rnn_input, hidden)
-        
-        pre_output = torch.cat([prev_embed, output, context], dim=2)
-        pre_output = self.dropout_layer(pre_output)
-        pre_output = self.pre_output_layer(pre_output)
+    # Start decoding
+    step = 1
+    h, c = decoder.init_hidden_state(encoder_out)
 
-        return output, hidden, pre_output
-    
-    def forward(self, trg_embed, encoder_hidden, encoder_final, 
-                src_mask, trg_mask, hidden=None, max_len=None):
-        """Unroll the decoder one step at a time."""
-                                         
-        # the maximum number of steps to unroll the RNN
-        if max_len is None:
-            max_len = trg_mask.size(-1)
+    # s is a number less than or equal to k, because sequences are removed from this process once they hit <end>
+    while True:
 
-        # initialize decoder hidden state
-        if hidden is None:
-            hidden = self.init_hidden(encoder_final)
-        
-        # pre-compute projected encoder hidden states
-        # (the "keys" for the attention mechanism)
-        # this is only done for efficiency
-        proj_key = self.attention.key_layer(encoder_hidden)
-        
-        # here we store all intermediate hidden states and pre-output vectors
-        decoder_states = []
-        pre_output_vectors = []
-        
-        # unroll the decoder RNN for max_len steps
-        for i in range(max_len):
-            prev_embed = trg_embed[:, i].unsqueeze(1)
-            output, hidden, pre_output = self.forward_step(
-              prev_embed, encoder_hidden, src_mask, proj_key, hidden)
-            decoder_states.append(output)
-            pre_output_vectors.append(pre_output)
+        embeddings = decoder.embedding(k_prev_words).squeeze(1)  # (s, embed_dim)
 
-        decoder_states = torch.cat(decoder_states, dim=1)
-        pre_output_vectors = torch.cat(pre_output_vectors, dim=1)
-        return decoder_states, hidden, pre_output_vectors  # [B, N, D]
+        awe, alpha = decoder.attention(encoder_out, h)  # (s, encoder_dim), (s, num_pixels)
 
-    def init_hidden(self, encoder_final):
-        """Returns the initial decoder state,
-        conditioned on the final encoder state."""
+        alpha = alpha.view(-1, enc_image_size, enc_image_size)  # (s, enc_image_size, enc_image_size)
 
-        if encoder_final is None:
-            return None  # start with zeros
+        gate = decoder.sigmoid(decoder.f_beta(h))  # gating scalar, (s, encoder_dim)
+        awe = gate * awe
 
-        return torch.tanh(self.bridge(encoder_final))            
+        h, c = decoder.decode_step(torch.cat([embeddings, awe], dim=1), (h, c))  # (s, decoder_dim)
 
+        scores = decoder.fc(h)  # (s, vocab_size)
+        scores = F.log_softmax(scores, dim=1)
 
-class BahdanauAttention(nn.Module):
-    """Implements Bahdanau (MLP) attention"""
-    
-    def __init__(self, hidden_size, key_size=None, query_size=None):
-        super(BahdanauAttention, self).__init__()
-        
-        # We assume a bi-directional encoder so key_size is 2*hidden_size
-        key_size = 2 * hidden_size if key_size is None else key_size
-        query_size = hidden_size if query_size is None else query_size
+        # Add
+        scores = top_k_scores.expand_as(scores) + scores  # (s, vocab_size)
 
-        self.key_layer = nn.Linear(key_size, hidden_size, bias=False)
-        self.query_layer = nn.Linear(query_size, hidden_size, bias=False)
-        self.energy_layer = nn.Linear(hidden_size, 1, bias=False)
-        
-        # to store attention scores
-        self.alphas = None
-        
-    def forward(self, query=None, proj_key=None, value=None, mask=None):
-        assert mask is not None, "mask is required"
+        # For the first step, all k points will have the same scores (since same k previous words, h, c)
+        if step == 1:
+            top_k_scores, top_k_words = scores[0].topk(k, 0, True, True)  # (s)
+        else:
+            # Unroll and find top scores, and their unrolled indices
+            top_k_scores, top_k_words = scores.view(-1).topk(k, 0, True, True)  # (s)
 
-        # We first project the query (the decoder state).
-        # The projected keys (the encoder states) were already pre-computated.
-        query = self.query_layer(query)
-        
-        # Calculate scores.
-        scores = self.energy_layer(torch.tanh(query + proj_key))
-        scores = scores.squeeze(2).unsqueeze(1)
-        
-        # Mask out invalid positions.
-        # The mask marks valid positions so we invert it using `mask & 0`.
-        scores.data.masked_fill_(mask == 0, -float('inf'))
-        
-        # Turn scores to probabilities.
-        alphas = F.softmax(scores, dim=-1)
-        self.alphas = alphas        
-        
-        # The context vector is the weighted sum of the values.
-        context = torch.bmm(alphas, value)
-        
-        # context shape: [B, 1, 2D], alphas shape: [B, 1, M]
-        return context, alphas
+        # Convert unrolled indices to actual indices of scores
+        prev_word_inds = top_k_words / vocab_size  # (s)
+        next_word_inds = top_k_words % vocab_size  # (s)
 
-def greedy_decode(model, src, src_mask, src_lengths, max_len=100, sos_index=1, eos_index=None):
-    """Greedily decode a sentence."""
-    print(f'### In greedy_decode method, type of model is : {type(model)}')
-    with torch.no_grad():
-        encoder_hidden, encoder_final = model.encode(src, src_mask, src_lengths)
-        prev_y = torch.ones(1, 1).fill_(sos_index).type_as(src)
-        trg_mask = torch.ones_like(prev_y)
+        # Add new words to sequences, alphas
+        seqs = torch.cat([seqs[prev_word_inds], next_word_inds.unsqueeze(1)], dim=1)  # (s, step+1)
+        seqs_alpha = torch.cat([seqs_alpha[prev_word_inds], alpha[prev_word_inds].unsqueeze(1)],
+                               dim=1)  # (s, step+1, enc_image_size, enc_image_size)
 
-    output = []
-    attention_scores = []
-    hidden = None
+        # Which sequences are incomplete (didn't reach <end>)?
+        incomplete_inds = [ind for ind, next_word in enumerate(next_word_inds) if
+                           next_word != word_map['<end>']]
+        complete_inds = list(set(range(len(next_word_inds))) - set(incomplete_inds))
 
-    for i in range(max_len):
-        with torch.no_grad():
-            out, hidden, pre_output = model.decode(
-              encoder_hidden, encoder_final, src_mask,
-              prev_y, trg_mask, hidden)
+        # Set aside complete sequences
+        if len(complete_inds) > 0:
+            complete_seqs.extend(seqs[complete_inds].tolist())
+            complete_seqs_alpha.extend(seqs_alpha[complete_inds].tolist())
+            complete_seqs_scores.extend(top_k_scores[complete_inds])
+        k -= len(complete_inds)  # reduce beam length accordingly
 
-            # we predict from the pre-output layer, which is
-            # a combination of Decoder state, prev emb, and context
-            prob = model.generator(pre_output[:, -1])
+        # Proceed with incomplete sequences
+        if k == 0:
+            break
+        seqs = seqs[incomplete_inds]
+        seqs_alpha = seqs_alpha[incomplete_inds]
+        h = h[prev_word_inds[incomplete_inds]]
+        c = c[prev_word_inds[incomplete_inds]]
+        encoder_out = encoder_out[prev_word_inds[incomplete_inds]]
+        top_k_scores = top_k_scores[incomplete_inds].unsqueeze(1)
+        k_prev_words = next_word_inds[incomplete_inds].unsqueeze(1)
 
-        _, next_word = torch.max(prob, dim=1)
-        next_word = next_word.data.item()
-        output.append(next_word)
-        prev_y = torch.ones(1, 1).type_as(src).fill_(next_word)
-        attention_scores.append(model.decoder.attention.alphas.cpu().numpy())
-    
-    output = np.array(output)
-        
-    # cut off everything starting from </s> 
-    # (only when eos_index provided)
-    if eos_index is not None:
-        first_eos = np.where(output==eos_index)[0]
-        if len(first_eos) > 0:
-            output = output[:first_eos[0]]      
-    
-    return output, np.concatenate(attention_scores, axis=1)
-  
-def lookup_words(x, vocab=None):
-    if vocab is not None:
-        x = [vocab.itos[i] for i in x]
+        # Break if things have been going on too long
+        if step > 50:
+            break
+        step += 1
 
-    return [str(t) for t in x]
+    i = complete_seqs_scores.index(max(complete_seqs_scores))
+    seq = complete_seqs[i]
+    alphas = complete_seqs_alpha[i]
 
-def make_model(src_vocab, tgt_vocab, emb_size=256, hidden_size=512, num_layers=1, dropout=0.1):
-    "Helper: Construct a model from hyperparameters."
+    return seq, alphas
 
-    attention = BahdanauAttention(hidden_size)
+# Generate Caption
+def generateCaptionInternal(image_bytes):
 
-    model = EncoderDecoder(
-        Encoder(emb_size, hidden_size, num_layers=num_layers, dropout=dropout),
-        Decoder(emb_size, hidden_size, attention, num_layers=num_layers, dropout=dropout),
-        nn.Embedding(src_vocab, emb_size),
-        nn.Embedding(tgt_vocab, emb_size),
-        Generator(hidden_size, tgt_vocab))
+    # Save image locally
+    # Create a PIL Image from our pixel array.
+    im = Image.frombytes("RGB", (224, 224), image_bytes)
 
-    return model.cuda() if torch.cuda.is_available() else model
+    # Save the image.
+    im.save('uploaded-image.png', "PNG")
 
-# Make Prediction
-def translate_german2english(model, sentence,spacy_model,src_fields,DEVICE='cpu'):
-    print('### In translate_german2english method')
-    model.eval()
-    tokenized = [tok.text for tok in spacy_model.tokenizer(sentence)]
-    print(f'### tokenized : {tokenized}')
-    indexed = [src_fields.vocab.stoi[t] for t in tokenized]
-    print(f'### indexed : {indexed}')
-    tensor = torch.LongTensor(indexed).to(DEVICE)
-    tensor = tensor.unsqueeze(0)
-    print(f'### tensor : {tensor}')
-    print(f'### Tensor size is : {tensor.size()}')
-    pad_index = 0
-    src_mask = (tensor != pad_index).unsqueeze(0).to(DEVICE)
-    print(f'### src_mask : {src_mask} and src_mask size is : {src_mask.size()}')
-    src_lengths = torch.LongTensor([tensor.size()[1]]).to(DEVICE)
-    print(f'### src_lengths : {src_lengths} and size is : {src_lengths.size()}')
-    result, _ = greedy_decode(
-          model, tensor, src_mask, src_lengths,
-          max_len=25, sos_index=TRG.vocab.stoi[SOS_TOKEN], eos_index=TRG.vocab.stoi[EOS_TOKEN])
-    
-    output = lookup_words(result,vocab= TRG.vocab)
-    outText = ' '.join(output)
-        
-    return outText
+    # Load word map (word2ix)
+    with open('WORDMAP_flickr8k_5_cap_per_img_5_min_word_freq.json', 'r') as j:
+        word_map = json.load(j)
+    rev_word_map = {v: k for k, v in word_map.items()}  # ix2word
 
-'''
-S3_BUCKET = os.environ['S3_BUCKET'] if 'S3_BUCKET' in os.environ else 'suman-p2-bucket'
-#MODEL_PATH = os.environ['MODEL_PATH'] if 'MODEL_PATH' in os.environ else 's11-german2EnglishText-encoder-decoder-full-cpu-stdict.pt'
-MODEL_PATH = os.environ['MODEL_PATH'] if 'MODEL_PATH' in os.environ else 's11-german2EnglishText-encoder-decoder-full-cpu.pt'
-SRC_TEXT_FIELD= os.environ['SRC_TEXT_FIELD'] if 'SRC_TEXT_FIELD' in os.environ else 'SRC_fields.pkl'
-TRG_TEXT_FIELD= os.environ['TRG_TEXT_FIELD'] if 'TRG_TEXT_FIELD' in os.environ else 'TRG_fields.pkl'
-'''
+    # Encode, decode with attention and beam search
+    seq, alphas = caption_image_beam_search(encoder, decoder, 'uploaded-image.png', word_map, 5)
+    alphas = torch.FloatTensor(alphas)
 
-S3_BUCKET  = os.environ['S3_BUCKET'] if 'S3_BUCKET' in os.environ else 'suman-p2-bucket'
-MODEL_PATH = os.environ['MODEL_PATH'] if 'MODEL_PATH' in os.environ else 's11-german2EnglishText-encoder-decoder-full-cpu-stdict.pt'
-SRC_FIELD  = os.environ['SRC_FIELD'] if 'SRC_FIELD' in os.environ else 'SRC_fields.pkl'
-TRG_FIELD  = os.environ['TRG_FIELD'] if 'TRG_FIELD' in os.environ else 'TRG_fields.pkl'
-print(f'### model path : {MODEL_PATH} SRC : {SRC_FIELD} TRG : {TRG_FIELD}')
+    # create sentence
+    words = [rev_word_map[ind] for ind in seq]
+    print(words)
 
-s3 = boto3.client('s3')
+    # using list comprehension 
+    caption = ' '.join([str(elem) for elem in words])
+    print(caption)
+    return caption
 
-##############
-#Load SRC and TRG pkl files:
-##############
-if os.path.isfile(SRC_FIELD) != True:
-    obj = s3.get_object(Bucket=S3_BUCKET, Key=SRC_FIELD)
-    print("### Main: Loading SRC pkl file in Bytestream...")
-    bytesstream_SRC = io.BytesIO(obj['Body'].read())
-    SRC = torch.load(bytesstream_SRC, pickle_module=dill)
-
-
-if os.path.isfile(TRG_FIELD) != True:
-    obj = s3.get_object(Bucket=S3_BUCKET, Key=TRG_FIELD)
-    print("### Main: Loading TRG pkl file in Bytestream...")
-    bytesstream_TRG = io.BytesIO(obj['Body'].read())
-    TRG = torch.load(bytesstream_TRG, pickle_module=dill)
-
-    
-################
-criterion = nn.NLLLoss(reduction="sum", ignore_index=0)
-model = make_model(len(SRC.vocab), len(TRG.vocab),emb_size=256, hidden_size=256,num_layers=1, dropout=0.2)
 ##############
 #Load Model file:
 ##############
-print(f'### Check dirs before we do import model : {os.listdir()}')
-if os.path.isfile(MODEL_PATH) != True:
-    obj = s3.get_object(Bucket=S3_BUCKET, Key=MODEL_PATH)
-    bytesstream_model = io.BytesIO(obj['Body'].read())
-    chkpnt = torch.load(bytesstream_model,map_location=torch.device('cpu'))
-    print("### Main: Model Loaded...")
-    
-model.load_state_dict(chkpnt)
-
-print(f'### Device is : {device}')
-model = model.to(device)
-model.eval()
-
-try:
-    print('### loading spacy')
-    os.system('cp -r de_core_news_sm* /tmp/pkgs-from-layer/')
-    spacy_de = spacy.load('/tmp/pkgs-from-layer/de_core_news_sm/de_core_news_sm-2.2.5')
-    print('### spacy de model is loaded')
-except Exception as e:
-    print(f'### Exception occured in loading spacy model :{str(e)}')
-
-
-def translateg2e(event, context):
+def load_model_from_s3():
     try:
-        print('### You are in translateg2e method')
-        print(f'### Event is : {event}')
-        bodyTemp = event["body"]
-        body = json.loads(bodyTemp)
-        print(body,type(body))
-        germanText = body["germanText"]
-        print(f'### germanText : {germanText} and its type is : {type(germanText)}')
+        obj = s3.get_object(Bucket=S3_BUCKET, Key=MODEL_PATH)
+        print('Creating Bytestream')
+        bytestream = io.BytesIO(obj['Body'].read())
+        print('Loading model...')
+        print(sys.getsizeof(bytestream) // (1024 * 1024))
+        model = torch.load(bytestream, map_location=torch.device('cpu'))
+        print(model is None)
+        return model
+    except Exception as e:
+        print('Exception in loading a model')
+        print(repr(e))
+        raise(e)
 
-        predValue = translate_german2english(model,germanText,spacy_de,SRC)
-        print('### Predicted value',predValue)
+#######################
+# Execute Initial code:
+#######################
+s3 = boto3.client('s3')
+
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda" if use_cuda else "cpu")
+print(device)
+
+model = load_model_from_s3()
+decoder = model['decoder']
+decoder = decoder.to(device)
+decoder.eval()
+encoder = model['encoder']
+encoder = encoder.to(device)
+encoder.eval()
+
+def generatecaption(event, context):
+    try:
+        print('### You are in generatecaption method')
+        print(f'### Event is : {event}')
+        content_type_header = event['headers']['content-type']
+        body = base64.b64decode(event["body"])
+        print('BODY Loaded')
+
+        picture = decoder.MultipartDecoder(body, content_type_header).parts[0]
+        caption = generateCaptionInternal(picture.Content)
+
         response = {
             "statusCode": 200,
             "headers": {
@@ -396,7 +245,7 @@ def translateg2e(event, context):
                 "Access-Control-Allow-Credentials": True
 
             },
-            "body": json.dumps({"input": germanText , "output":predValue})
+            "body": json.dumps({"output":caption})
         }
 
         return response

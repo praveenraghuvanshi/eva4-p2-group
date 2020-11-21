@@ -1,4 +1,4 @@
-service: s11g2e-test
+service: image-caption
 
 provider:
   name: aws
@@ -7,25 +7,23 @@ provider:
   region: ap-south-1
   timeout: 60
   environment:
-    S3_BUCKET: suman-p2-bucket
-    SRC_FIELD: SRC_fields.pkl
-    TRG_FIELD: TRG_fields.pkl
-    MODEL_PATH: s11-german2EnglishText-encoder-decoder-full-cpu-stdict.pt
+    S3_BUCKET: eva4p2bucket1
+    MODEL_PATH: model-caption.pth.tar
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - s3:getObject
-      Resource: arn:aws:s3:::suman-p2-bucket/*
+      Resource: arn:aws:s3:::eva4p2bucket1/*
 
 functions:
-  translateg2e:
-    handler: handler.translateg2e
+  imagecaption:
+    handler: handler.generatecaption
     memorySize: 3008
     timeout: 60
     events:
       - http:
-          path: translate
+          path: caption
           method: post
           cors: true
-    layers:
-      - arn:aws:lambda:ap-south-1:936131757702:layer:gp-torchtext-spacy-pytorch-layer:2
+plugins:
+  - serverless-python-requirements
