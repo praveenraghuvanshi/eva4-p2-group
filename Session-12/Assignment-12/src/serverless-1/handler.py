@@ -1,24 +1,48 @@
-import json
+try:
+    print('### Import started')
+    import os
+    import io
+    import base64
+    import json
+    import sys
+    import unzip_requirements
+    from requests_toolbelt.multipart import decoder
 
+    print('### Import End....')
+except ImportError:
+    print('### Exception occurred in import')
 
-def hello(event, context):
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": event
-    }
+def generatecaption(event, context):
+    try:
+        print('### You are in generatecaption method')
+        print(f'### Event is : {event}')
+        content_type_header = event['headers']['content-type']
+        body = base64.b64decode(event["body"])
+        print('BODY Loaded')
 
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(body)
-    }
+        picture = decoder.MultipartDecoder(body, content_type_header).parts[0]
+        caption = "Image response" # generateCaptionInternal(picture.Content)
 
-    return response
+        response = {
+            "statusCode": 200,
+            "headers": {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Credentials": True
 
-    # Use this code if you don't use the http event with the LAMBDA-PROXY
-    # integration
-    """
-    return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
-    }
-    """
+            },
+            "body": json.dumps({"output":caption})
+        }
+
+        return response
+    except Exception as e:
+        print(repr(e))
+        return {
+            "statusCode": 500,
+            "headers": {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Credentials": True
+            },
+            "body": json.dumps({"error": repr(e)})
+        }
