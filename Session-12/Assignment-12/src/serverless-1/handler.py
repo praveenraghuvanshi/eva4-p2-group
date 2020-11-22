@@ -7,6 +7,9 @@ try:
     import sys
     import unzip_requirements
     from requests_toolbelt.multipart import decoder
+    print('### Imported unzip_requirements')
+
+    import torch
 
     print('### Import End....')
 except ImportError:
