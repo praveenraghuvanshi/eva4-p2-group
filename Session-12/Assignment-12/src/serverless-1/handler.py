@@ -10,6 +10,11 @@ try:
     print('### Imported unzip_requirements')
 
     import torch
+    import torch.nn.functional as F
+    print('### Import torch completed')
+
+    import torchvision.transforms as transforms    
+    print('### Import torchvision completed')
 
     print('### Import End....')
 except ImportError:
