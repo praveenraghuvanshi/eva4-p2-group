@@ -17,15 +17,7 @@
 
 ### Output
 
-**Input Image:** 
-
-<img src="assets\playing-kids.png" alt="Translated Result" style="zoom:80%;" />
-
-**Output Caption** : 
-
-['<start>', 'a', 'group', 'of', 'children', 'play', 'in', 'a', 'field', '<end>']
-
-
+<img src="assets\result.png" alt="Result" style="zoom:80%;" />
 
 ## Source
 
