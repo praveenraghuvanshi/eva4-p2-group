@@ -27,4 +27,5 @@ Server :
 
 - [serverless.yml](src/serverless/serverless.yml)
 
-Frontend : [App](src/ui)
+Frontend : [App](../../Session-11/Assignment-11/src/ui/src)
+
