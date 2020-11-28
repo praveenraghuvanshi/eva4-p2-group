@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
    selector: 'app-menu',
    template: `
       <ul>
-         <li><a routerLink="speechtotextComponent">Speech to text</a></li>
-         <li><a routerLink="imagecaptionComponent">Image caption</a></li>
+        <li><a routerLink="imagecaptionComponent">Image caption</a></li>
+        <li><a routerLink="speechtotextComponent">Speech to text</a></li>
       </ul>
    `,
    styles: [`
