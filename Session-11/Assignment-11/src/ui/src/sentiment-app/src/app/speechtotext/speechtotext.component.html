@@ -1,0 +1,17 @@
+<div class="jumbotron container-fluid">
+  <h1 class="display-4">Speech To Text</h1>
+  <hr class="my-4">
+  <div>
+    <p>Plese upload an audio file(*.wav)</p>
+    <img *ngIf="url !== ''" [src]="url" height="200"> <br/>
+    <input type='file' accept=".wav" (change)="onSelectFile($event)"> <br/>
+    <button *ngIf="file !== null" class="btn btn-secondary" (click)="speechToTextCaption()">Convert to Text</button>
+    <div class="progress" *ngIf="isProcessing === true">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
+    </div>
+  </div>  
+  <div *ngIf="convertedText !== ''">
+    <p class="lead">Converted Text:</p>
+    <span>{{convertedText}}</span>
+  </div>  
+</div>

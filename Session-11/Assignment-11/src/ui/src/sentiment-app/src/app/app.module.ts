@@ -9,11 +9,15 @@ import { CommonModule } from '@angular/common';
 import { TransferHttpCacheModule } from '@nguniversal/common';
 import { NgtUniversalModule } from '@ng-toolkit/universal';
 import { ImagecaptionComponent } from './imagecaption/imagecaption.component';
+import { MenuComponent } from './menu/menu.component';
+import { SpeechtotextComponent } from './speechtotext/speechtotext.component';
 @NgModule({
    declarations: [
       AppComponent,
       TranslationComponent,
-      ImagecaptionComponent
+      ImagecaptionComponent,
+      MenuComponent,
+      SpeechtotextComponent
    ],
    imports: [
       BrowserModule.withServerTransition({ appId: 'serverApp' }),
