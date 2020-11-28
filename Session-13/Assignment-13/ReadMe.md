@@ -9,15 +9,15 @@
 ## Resources
 
 - Webpage: https://hcrjlpjoo0.execute-api.ap-south-1.amazonaws.com/production/
-- Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-12/Assignment-12
-- Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-12/Assignment-12/src
-- Notebooks: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-12/Assignment-12/src/ev4p2s12.ipynb
+- Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-13/Assignment-13
+- Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-13/Assignment-13/src
+- Notebooks: https://github.com/praveenraghuvanshi/eva4-p2-group/blob/master/Session-13/Assignment-13/src/ev4p2s13.ipynb
 
 ## Result
 
 ### Output
 
-<img src="assets\result.png" alt="Result" style="zoom:80%;" />
+
 
 ## Source
 
