@@ -23,6 +23,8 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: python3.8
+  apiGateway:
+    shouldStartNameWithService: true
 
 functions:
   hello:
