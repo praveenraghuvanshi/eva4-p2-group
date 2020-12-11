@@ -9,9 +9,6 @@ image_classify_mobilenet_url = 'https://daa70df9c6.execute-api.ap-south-1.amazon
 
 app = Flask(__name__)
 app.debug = True
-app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
-app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
-app.config['UPLOAD_PATH'] = 'uploads'
 
 @app.route('/')
 def index():
