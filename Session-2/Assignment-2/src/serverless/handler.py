@@ -76,7 +76,8 @@ def get_prediction(image_bytes):
 
 def classify_image(event, context):
     try:
-        content_type_header = event['headers']['content-type']
+        print(json.dumps(event))
+        content_type_header = event['headers']['Content-Type']
         body = base64.b64decode(event["body"])
         print('BODY Loaded')
 
