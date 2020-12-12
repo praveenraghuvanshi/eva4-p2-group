@@ -13,3 +13,7 @@
 - Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-14/Assignment-14/src
 
 ## Result
+
+<img src="\assets\image-classification-homepage.png" alt="image-20201212141548933" style="zoom:80%;" />
+
+<img src="assets\image-classification-result.png" alt="image-20201212141734743" style="zoom:80%;" />
