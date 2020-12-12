@@ -66,8 +66,10 @@ def get_aligned_image(image_bytes):
 
 def classify_image(event, context):
     try:
-        content_type_header = event['headers']['content-type']
+        print(json.dumps(event))
+        content_type_header = event['headers']['Content-Type']        
         body = base64.b64decode(event["body"])
+        print(type(body))
         print('BODY Loaded')
 
         picture = decoder.MultipartDecoder(body, content_type_header).parts[0]
