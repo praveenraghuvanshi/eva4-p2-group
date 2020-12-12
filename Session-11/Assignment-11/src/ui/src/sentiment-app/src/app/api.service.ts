@@ -27,4 +27,15 @@ export class ApiService {
    formData);
    return response;
 }
+
+public speechToText(audioFile: File): Observable<any> {
+   console.log('Before speech to text: ' + audioFile.name);
+   const formData = new FormData();
+   formData.append('data', audioFile);
+
+   var response = this.httpClient.post('https://yu1j7kt463.execute-api.ap-south-1.amazonaws.com/dev/speechToText',
+   formData,
+   {responseType: 'text'}); // API returns text instead of json
+   return response;
+}
 }

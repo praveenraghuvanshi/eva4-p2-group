@@ -30,12 +30,12 @@ export class SpeechtotextComponent {
       }
   }
 
-  speechToTextCaption(){
+  speechToText(){
     this.isProcessing = true;
-    this.apiService.generateCaption(this.file).subscribe(data =>
+    this.apiService.speechToText(this.file).subscribe(data =>
       {
-        console.log('Response: ' + data.output);
-        this.convertedText = data.output;
+        console.log('Response: ' + data);
+        this.convertedText = data;
         this.isProcessing = false;
       },
       error => { //Error callback
