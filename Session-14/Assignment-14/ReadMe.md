@@ -8,7 +8,7 @@
 
 ## Resources
 
-- Webpage: http://ec2-3-7-69-212.ap-south-1.compute.amazonaws.com/
+- Webpage: http://ec2-52-66-252-155.ap-south-1.compute.amazonaws.com/
 - Github: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-14/Assignment-14
 - Source: https://github.com/praveenraghuvanshi/eva4-p2-group/tree/master/Session-14/Assignment-14/src
 
