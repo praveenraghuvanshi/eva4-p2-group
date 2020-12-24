@@ -7,6 +7,10 @@ import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analy
 import { AppRoutingModule } from './app-routing.module';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { TransferHttpCacheModule } from '@nguniversal/common';
+import { HttpClientModule } from '@angular/common/http';
+import { NgtUniversalModule } from '@ng-toolkit/universal';
 
 @NgModule({
   declarations: [
@@ -15,10 +19,14 @@ import { FormsModule } from '@angular/forms';
     SentimentAnalysisComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     RouterModule,
-    FormsModule
+    FormsModule,
+    CommonModule,
+    TransferHttpCacheModule,
+    HttpClientModule,
+    NgtUniversalModule
   ],
   providers: [],
   bootstrap: [AppComponent]
