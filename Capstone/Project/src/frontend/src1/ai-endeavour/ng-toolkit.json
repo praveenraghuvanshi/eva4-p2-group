@@ -15,5 +15,18 @@
     "skipServer": false,
     "skipUniversal": false,
     "webpack": true
+  },
+  "serverless": {
+    "project": "ai-endeavour",
+    "provider": "aws",
+    "skipInstall": false,
+    "directory": ".",
+    "lambdaTS": false,
+    "offline": false,
+    "clientProject": "ai-endeavour",
+    "serverless": {
+      "aws": {},
+      "gcloud": {}
+    }
   }
 }
