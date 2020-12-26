@@ -1,0 +1,64 @@
+service: ai-endeavour-svc
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.8
+  timeout: 10
+  stage: dev
+  region: ap-south-1
+
+environment:
+    BUCKET_NAME: aiendeavour
+iamRoleStatements:
+  - Effect: "Allow"
+    Action:
+      - s3:getObject
+    Resource: arn:aws:s3:::eva4p2bucket1/*
+
+  - Effect: "Allow"
+    Action:
+      - "s3:PutObject"
+    Resource: arn:aws:s3:::eva4p2bucket1/*
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    zip: true
+    slim: true
+    strip: false
+    noDeploy:
+      - docutils
+      - jmespath
+      - pip
+      - python-dateutil
+      - setuptools
+      - six
+      - tensorboard
+    useStaticCache: true
+    useDonwloadCache: true
+    cacheLocation: "./cache"
+
+package:
+  individually: false
+  exclude:
+    - package.json
+    - package-log.json
+    - node_modules/**
+    - cache/**
+    - test/**
+    - __pycache__/**
+    - .pytest_cache/**
+    - model/**
+
+functions:
+  upload:
+    handler: handler.upload
+    events:
+      - http:
+          path: upload
+          method: get
+          cors: true
+
+plugins:
+  - serverless-python-requirements
