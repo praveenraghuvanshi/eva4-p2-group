@@ -14,12 +14,12 @@ iamRoleStatements:
   - Effect: "Allow"
     Action:
       - s3:getObject
-    Resource: arn:aws:s3:::eva4p2bucket1/*
+    Resource: arn:aws:s3:::aiendeavour/*
 
   - Effect: "Allow"
     Action:
       - "s3:PutObject"
-    Resource: arn:aws:s3:::eva4p2bucket1/*
+    Resource: arn:aws:s3:::aiendeavour/*
 
 custom:
   pythonRequirements:
