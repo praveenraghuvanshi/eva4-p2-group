@@ -27,7 +27,7 @@ export class SentimentAnalysisComponent {
     // reader.readAsDataURL(this.file); // read file as data url
     reader.readAsText(this.file);
     reader.onload = (event: Event) => { // called once readAsDataURL is completed
-        this.filePreview = reader.result as string;;
+        this.filePreview = reader.result as string;
     }
   }
 

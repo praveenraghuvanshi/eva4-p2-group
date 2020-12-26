@@ -7,19 +7,14 @@ provider:
   timeout: 10
   stage: dev
   region: ap-south-1
-
-environment:
-    BUCKET_NAME: aiendeavour
-iamRoleStatements:
-  - Effect: "Allow"
-    Action:
-      - s3:getObject
-    Resource: arn:aws:s3:::aiendeavour/*
-
+  iamRoleStatements:
   - Effect: "Allow"
     Action:
       - "s3:PutObject"
-    Resource: arn:aws:s3:::aiendeavour/*
+    Resource: "arn:aws:s3:::aiendeavour/*"
+
+environment:
+    BUCKET_NAME: aiendeavour
 
 custom:
   pythonRequirements:
@@ -57,7 +52,7 @@ functions:
     events:
       - http:
           path: upload
-          method: get
+          method: post
           cors: true
 
 plugins:
