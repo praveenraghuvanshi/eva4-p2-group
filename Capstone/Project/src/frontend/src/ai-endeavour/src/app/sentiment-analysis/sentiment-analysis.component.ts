@@ -40,9 +40,9 @@ export class SentimentAnalysisComponent {
         this.isProcessing = false;
       },
       error => { //Error callback
-        console.error('error caught in component')
+        console.error('error caught in component\nError Details: ' + JSON.stringify(error))
         this.isProcessing = false;
-        alert("An error occured while processing the request, Please retry the operation!!!\nError Details: " + error);
+        alert("An error occured while processing the request, Please retry the operation!!!");
       });
   }
 

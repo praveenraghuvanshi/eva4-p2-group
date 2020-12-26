@@ -55,5 +55,13 @@ functions:
           method: post
           cors: true
 
+  predict:
+    handler: handler.predict
+    events:
+      - http:
+          path: predict
+          method: post
+          cors: true
+
 plugins:
   - serverless-python-requirements

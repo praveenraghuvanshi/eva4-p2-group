@@ -20,7 +20,8 @@ s3 = boto3.resource(u's3')
 
 def upload(event, context):
     try:
-        content_type_header = event['headers']['Content-Type']        
+        print(json.dumps(event))
+        content_type_header = event['headers']['content-type']        
         body = base64.b64decode(event["body"])
         print(type(body))
         print('BODY Loaded')
@@ -66,6 +67,40 @@ def upload(event, context):
 
             },
             "body": json.dumps({ 'uploadedfile': FILE_NAME, 'resourceurl':  uploadedFileUrl})
+        }
+    except Exception as e:
+        print(repr(e))
+        return {
+            "statusCode": 500,
+            "headers": {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Credentials": True
+            },
+            "body": json.dumps({"error": repr(e)})
+        }
+
+
+def predict(event, context):
+    try:
+        print(json.dumps(event))
+        requestBody = base64.b64decode(event["body"])
+        print(requestBody)
+        body = json.loads(requestBody)
+        print(json.dumps(body))
+        input = body["inputtext"]
+        print(input)        
+
+        sentiment = "positive"
+        return {
+            "statusCode": 200,
+            "headers": {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                "Access-Control-Allow-Credentials": True
+
+            },
+            "body": json.dumps({"input": input , "predictionValue":0.01, "sentiment": sentiment })
         }
     except Exception as e:
         print(repr(e))
