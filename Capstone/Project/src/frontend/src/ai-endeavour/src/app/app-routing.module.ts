@@ -5,8 +5,15 @@ import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analy
 @NgModule({
     imports: [
       RouterModule.forRoot([
-        { path : '', redirectTo : 'sentimentAnalysisComponent', pathMatch: 'full' },
-        { path : 'sentimentAnalysisComponent', component : SentimentAnalysisComponent}
+        {
+          path : '',
+          redirectTo : 'sentimentAnalysisComponent',
+          pathMatch: 'full'
+        },
+        {
+          path : 'sentimentAnalysisComponent',
+          component : SentimentAnalysisComponent
+        }
       ])
     ],
     exports: [ RouterModule ]

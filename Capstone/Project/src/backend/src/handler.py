@@ -16,15 +16,13 @@ from botocore.client import Config
 BUCKET_NAME = os.environ['BUCKET_NAME'] if 'BUCKET_NAME' in os.environ else 'aiendeavour'
 print(BUCKET_NAME)
 
-s3 = boto3.resource(u's3')# boto3.client('s3')
+s3 = boto3.resource(u's3')
 
 def upload(event, context):
     try:
-        # print(json.dumps(event))
-        content_type_header = event['headers']['content-type']        
+        content_type_header = event['headers']['Content-Type']        
         body = base64.b64decode(event["body"])
         print(type(body))
-        # print(body)
         print('BODY Loaded')
 
         csv = decoder.MultipartDecoder(body, content_type_header).parts[0]

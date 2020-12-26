@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { ApiService } from '../api.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-sentiment-analysis',
@@ -7,13 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SentimentAnalysisComponent {
 
+  public response: Observable<any>;
   file:File = null!;
   isProcessing = false;
   isTrained = false;
   filePreview:string = '';
   sentimentSentence = '';
+  uploadedFile:string = ''
 
-  constructor() {  }
+  constructor(private apiService: ApiService) {  }
 
   onSelectFile(event: Event) { // called each time file input changes
     const input = event.target as HTMLInputElement;
@@ -29,6 +33,17 @@ export class SentimentAnalysisComponent {
     reader.onload = (event: Event) => { // called once readAsDataURL is completed
         this.filePreview = reader.result as string;
     }
+    this.apiService.upload(this.file).subscribe(data =>
+      {
+        console.log('Response: ' + JSON.stringify(data));
+        this.uploadedFile = data.uploadedfile;
+        this.isProcessing = false;
+      },
+      error => { //Error callback
+        console.error('error caught in component')
+        this.isProcessing = false;
+        alert("An error occured while processing the request, Please retry the operation!!!\nError Details: " + error);
+      });
   }
 
   trainModel(){

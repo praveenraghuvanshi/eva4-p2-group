@@ -8,6 +8,7 @@
       <h4>File content preview</h4>
       {{filePreview}}
     </div>
+    <label>{{uploadedFile}}</label>
     <div *ngIf="filePreview !== ''">
       <button class="btn btn-primary" (click)="trainModel()">Train</button>
       <div class="progress" *ngIf="isProcessing === true">

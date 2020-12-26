@@ -6,17 +6,25 @@ import { CommonModule } from '@angular/common';
 import { TransferHttpCacheModule } from '@nguniversal/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgtUniversalModule } from '@ng-toolkit/universal';
+import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analysis.component'
+import { MenuComponent } from './menu/menu.component'
+import { FormsModule } from '@angular/forms';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SentimentAnalysisComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     CommonModule,
     TransferHttpCacheModule,
     HttpClientModule,
-    NgtUniversalModule
+    NgtUniversalModule,
+    FormsModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
