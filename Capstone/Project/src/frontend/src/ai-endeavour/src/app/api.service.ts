@@ -17,4 +17,14 @@ export class ApiService {
     var response = this.httpClient.post<any>('https://xxuj660nkd.execute-api.ap-south-1.amazonaws.com/dev/upload', formData);
     return response;
   }
+
+  public predict(input: string): Observable<any> {
+    console.log('Input text: ' + input);
+    var inputData = {
+       inputtext : input
+    }
+    var response = this.httpClient.post<any>('https://xxuj660nkd.execute-api.ap-south-1.amazonaws.com/dev/predict',
+    JSON.stringify(inputData));
+    return response;
+ }
 }

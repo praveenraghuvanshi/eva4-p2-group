@@ -16,6 +16,7 @@ export class SentimentAnalysisComponent {
   filePreview:string = '';
   sentimentSentence = '';
   uploadedFile:string = ''
+  predictedSentiment = ''
 
   constructor(private apiService: ApiService) {  }
 
@@ -62,5 +63,18 @@ export class SentimentAnalysisComponent {
     this.sentimentSentence = `${value}`;
     console.log('Sentiment Sentence: ' + this.sentimentSentence);
     this.isProcessing = true;
+    this.apiService.predict(this.sentimentSentence).subscribe(data =>
+      {
+        console.log(JSON.stringify(data));
+
+        this.predictedSentiment = data.sentiment;
+        console.log("Predicted Sentiment: " + this.predictSentiment);
+        this.isProcessing = false;
+      },
+      error => { //Error callback
+        console.error('error caught in component\nError Details:' + JSON.stringify(error));
+        this.isProcessing = false;
+        alert("An error occured while processing the request, Please retry the operation!!!");
+      });
   }
 }
