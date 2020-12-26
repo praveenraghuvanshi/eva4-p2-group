@@ -17,6 +17,7 @@ export class SentimentAnalysisComponent {
   sentimentSentence = '';
   uploadedFile:string = ''
   predictedSentiment = ''
+  public csvRecords: any[] = [];
 
   constructor(private apiService: ApiService) {  }
 
@@ -33,6 +34,13 @@ export class SentimentAnalysisComponent {
     reader.readAsText(this.file);
     reader.onload = (event: Event) => { // called once readAsDataURL is completed
         this.filePreview = reader.result as string;
+        // Get 10 CSV records
+        let csvData = reader.result;
+        let csvRecordsArray = (csvData as string).split(/\r\n|\n/);
+        for(let i=0;i<10;i++){
+          let rowdata = csvRecordsArray[i].match(/(“[^”]*”)|[^,]+/g);
+          this.csvRecords.push(rowdata);
+      }
     }
     this.apiService.upload(this.file).subscribe(data =>
       {

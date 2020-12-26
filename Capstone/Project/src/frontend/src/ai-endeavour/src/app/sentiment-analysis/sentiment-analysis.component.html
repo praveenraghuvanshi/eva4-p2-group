@@ -5,8 +5,12 @@
     <p>Plese upload an csv file(*.csv) containing a sentiment text and a sentiment</p>
     <input type='file' accept=".csv" (change)="onSelectFile($event)" class="btn btn-primary"> <br/>
     <div *ngIf="filePreview !== ''" class="content">
-      <h4>File content preview</h4>
-      {{filePreview}}
+      <h4><b>File Preview</b></h4>
+      <table>
+        <tr *ngFor="let item of csvRecords">
+        <td *ngFor="let single of item">{{single}}</td>
+        </tr>
+      </table>
     </div>
     <label>{{uploadedFile}}</label>
     <div *ngIf="filePreview !== ''">

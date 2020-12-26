@@ -55,6 +55,14 @@ functions:
           method: post
           cors: true
 
+  train:
+    handler: handler.train
+    events:
+      - http:
+          path: train
+          method: get
+          cors: true
+
   predict:
     handler: handler.predict
     events:
