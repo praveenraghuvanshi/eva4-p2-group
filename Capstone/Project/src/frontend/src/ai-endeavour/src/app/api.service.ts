@@ -18,6 +18,16 @@ export class ApiService {
     return response;
   }
 
+  public train(input: string): Observable<any> {
+    console.log('Input text: ' + input);
+    var inputData = {
+       inputtext : input
+    }
+    var response = this.httpClient.post<any>('https://xxuj660nkd.execute-api.ap-south-1.amazonaws.com/dev/train',
+    JSON.stringify(inputData));
+    return response;
+ }
+
   public predict(input: string): Observable<any> {
     console.log('Input text: ' + input);
     var inputData = {

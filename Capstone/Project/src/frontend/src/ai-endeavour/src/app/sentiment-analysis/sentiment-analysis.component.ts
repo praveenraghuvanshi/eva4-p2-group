@@ -59,12 +59,19 @@ export class SentimentAnalysisComponent {
     console.log("Training started...");
     this.isTrained = false;
     this.isProcessing = true;
-    setTimeout(() => {
-      console.log('hello');
-      console.log("Training Completed...");
-      this.isTrained = true;
-      this.isProcessing = false;
-    }, 5000);
+    this.apiService.train(this.uploadedFile).subscribe(data =>
+      {
+        console.log(JSON.stringify(data));
+
+        // this.predictedSentiment = data.sentiment;
+        // console.log("Predicted Sentiment: " + this.predictSentiment);
+        this.isProcessing = false;
+      },
+      error => { //Error callback
+        console.error('error caught in component\nError Details:' + JSON.stringify(error));
+        this.isProcessing = false;
+        alert("An error occured while processing the request, Please retry the operation!!!");
+      });
   }
 
   predictSentiment(value: string): void {

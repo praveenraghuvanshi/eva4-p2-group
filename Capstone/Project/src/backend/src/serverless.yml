@@ -60,7 +60,7 @@ functions:
     events:
       - http:
           path: train
-          method: get
+          method: post
           cors: true
 
   predict:
