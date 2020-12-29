@@ -11,6 +11,8 @@ try:
     import random
     import spacy
     import nltk
+    import dill
+    import pickle
     nltk.download('stopwords')
     SEED = 1234
     from nltk.corpus import stopwords
@@ -31,23 +33,15 @@ BATCH_SIZE = 64
 N_EPOCHS = 5
 MODEL_FILE = "model.pt"
 BUCKET_NAME = "aiendeavour"
-
-ACCESS_KEY = 'AKIAXO4QSMYRNBEMAZUW'
-SECRET_KEY = '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'
-REGION_NAME = 'ap-south-1'
-
+TEXT_FIELDS_FILE = "TEXT_fields.pkl"
+TEXT_VOCAB_FILE = "TEXT_vocab.pkl"
 
 model = NONE
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
 best_valid_loss = float('inf')
-# s3 = boto3.resource(u's3')
-session = boto3.Session(
-    aws_access_key_id=ACCESS_KEY, 
-    aws_secret_access_key=SECRET_KEY, 
-)
-s3 = session.resource('s3')
+s3 = boto3.resource(u's3')
 
 def epoch_time(start_time, end_time):
     elapsed_time = end_time - start_time
@@ -165,16 +159,26 @@ def download_from_s3(local_file, remote_file):
     s3.Bucket(BUCKET_NAME).download_file(remote_file, local_file)
     return local_file
 
-def upload_to_s3():
-    s3.Bucket(BUCKET_NAME).upload_file(MODEL_FILE, MODEL_FILE)
+def upload_to_s3(localFile, remoteFile):
+    s3.Bucket(BUCKET_NAME).upload_file(localFile, remoteFile)
     uploadedFileUrl = "https://s3-%s.amazonaws.com/%s/%s" % (
         "ap-south-1",
         BUCKET_NAME,
-        urllib.parse.quote(MODEL_FILE, safe="~()*!.'"),
+        urllib.parse.quote(remoteFile, safe="~()*!.'"),
     )
-    print('S3 uploaded file Url is ' + MODEL_FILE)
+    print('S3 uploaded file Url is ' + remoteFile)
     print("S3 url is " + uploadedFileUrl)
     return uploadedFileUrl
+
+def upload_data(filename):
+    return upload_to_s3(filename, filename)
+
+
+def save_vocab(vocab, path):
+    import pickle
+    output = open(path, 'wb')
+    pickle.dump(vocab, output)
+    output.close()
 
 def train_model(data_file):
     # Load Data
@@ -203,19 +207,45 @@ def train_model(data_file):
     test_loss, test_acc = compute_test_loss_accuracy(model, test_iterator, criterion)
     print(f'Test Loss: {test_loss:.3f} | Test Acc: {test_acc*100:.2f}%')
 
-    uploadedFileUrl = upload_to_s3()
+    uploadedFileUrl = upload_to_s3(MODEL_FILE, MODEL_FILE)
+
+    # Save fields
+    print(TEXT)
+    torch.save(TEXT, TEXT_FIELDS_FILE, pickle_module=dill)
+    save_vocab(TEXT.vocab,TEXT_VOCAB_FILE)
+    upload_to_s3(TEXT_VOCAB_FILE, TEXT_VOCAB_FILE)
+    upload_to_s3(TEXT_FIELDS_FILE, TEXT_FIELDS_FILE)
+
     return {
         "test_loss" : test_loss,
         "test_acc" : test_acc,
         "model" : MODEL_FILE,
-        "model_url" : uploadedFileUrl 
+        "model_url" : uploadedFileUrl,
+        "text_fields_file": TEXT_FIELDS_FILE,
+        "text_vocab_file": TEXT_VOCAB_FILE
     }
 
-def predict_sentiment(sentence, min_len = 5):
+def predict_sentiment(sentence, modelName, textFields, textVocab):
+    modelLocalFile = download_from_s3(modelName, modelName)
+    textFieldsLocalFile = download_from_s3(textFields, textFields)
+    textVocabLocalFile = download_from_s3(textVocab, textFields)
+
+    TEXT = torch.load(textFieldsLocalFile, pickle_module=dill)
+
+    with open(textVocabLocalFile,'rb') as p:
+        data = pickle.load(p)
+    
+    print(data)
+
+    INPUT_DIM = len(TEXT.vocab)
+    model = RNN(INPUT_DIM, EMBEDDING_DIM, HIDDEN_DIM, OUTPUT_DIM)
+    model.load_state_dict(torch.load(modelLocalFile))
+    
     print('### loading spacy')
     nlp = spacy.load('en_core_web_sm-2.2.5/en_core_web_sm/en_core_web_sm-2.2.5')
     model.eval()
     tokenized = [tok.text for tok in nlp.tokenizer(sentence)]
+    min_len = 5
     if len(tokenized) < min_len:
         tokenized += ['<pad>'] * (min_len - len(tokenized))
     #indexed = [data.stoi[t] for t in tokenized]
