@@ -34,7 +34,6 @@ N_EPOCHS = 5
 MODEL_FILE = "model.pt"
 BUCKET_NAME = "aiendeavour"
 TEXT_FIELDS_FILE = "TEXT_fields.pkl"
-TEXT_VOCAB_FILE = "TEXT_vocab.pkl"
 
 model = NONE
 
@@ -174,12 +173,6 @@ def upload_data(filename):
     return upload_to_s3(filename, filename)
 
 
-def save_vocab(vocab, path):
-    import pickle
-    output = open(path, 'wb')
-    pickle.dump(vocab, output)
-    output.close()
-
 def train_model(data_file):
     # Load Data
     train_data, test_data, valid_data = load_data(data_file)
@@ -210,10 +203,8 @@ def train_model(data_file):
     uploadedFileUrl = upload_to_s3(MODEL_FILE, MODEL_FILE)
 
     # Save fields
-    print(TEXT)
+    print(INPUT_DIM)
     torch.save(TEXT, TEXT_FIELDS_FILE, pickle_module=dill)
-    save_vocab(TEXT.vocab,TEXT_VOCAB_FILE)
-    upload_to_s3(TEXT_VOCAB_FILE, TEXT_VOCAB_FILE)
     upload_to_s3(TEXT_FIELDS_FILE, TEXT_FIELDS_FILE)
 
     return {
@@ -221,23 +212,17 @@ def train_model(data_file):
         "test_acc" : test_acc,
         "model" : MODEL_FILE,
         "model_url" : uploadedFileUrl,
-        "text_fields_file": TEXT_FIELDS_FILE,
-        "text_vocab_file": TEXT_VOCAB_FILE
+        "text_fields_file": TEXT_FIELDS_FILE
     }
 
-def predict_sentiment(sentence, modelName, textFields, textVocab):
+def predict_sentiment(sentence, modelName, textFields):
     modelLocalFile = download_from_s3(modelName, modelName)
     textFieldsLocalFile = download_from_s3(textFields, textFields)
-    textVocabLocalFile = download_from_s3(textVocab, textFields)
 
     TEXT = torch.load(textFieldsLocalFile, pickle_module=dill)
-
-    with open(textVocabLocalFile,'rb') as p:
-        data = pickle.load(p)
     
-    print(data)
-
     INPUT_DIM = len(TEXT.vocab)
+    print(INPUT_DIM)
     model = RNN(INPUT_DIM, EMBEDDING_DIM, HIDDEN_DIM, OUTPUT_DIM)
     model.load_state_dict(torch.load(modelLocalFile))
     

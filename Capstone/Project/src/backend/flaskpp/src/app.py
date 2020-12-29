@@ -40,9 +40,8 @@ def predict():
     sentence  = request.json['inputtext']
     modelName = request.json['model']
     textFields = request.json["textfields"]
-    textVocab = request.json["textvocab"]
-
-    predValue = predict_sentiment(sentence, modelName, textFields, textVocab)
+    
+    predValue = predict_sentiment(sentence, modelName, textFields)
     print('Predicted value',predValue)
     review = "Positive" if predValue >= 0.5 else "Negative"
     print(review)
