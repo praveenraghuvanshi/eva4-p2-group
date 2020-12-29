@@ -103,7 +103,7 @@ def train(event, context):
         print(f'{data} downloaded from S3')
 
         # train on EC2
-        url = "" + "?data=" + data
+        url = "http://ec2-13-232-68-208.ap-south-1.compute.amazonaws.com/train?data=" + data
         resp = requests.get(url)
         print(resp.json())
 
@@ -144,22 +144,19 @@ def predict(event, context):
         body = json.loads(requestBody)
         print(json.dumps(body))
         input = body["inputtext"]
+        model = body["model"]
         print(input)        
 
         # train on EC2
-        url = "" + "?data=" + data
-        resp = requests.get(url)
+        url = "http://ec2-13-232-68-208.ap-south-1.compute.amazonaws.com/predict"
+        data = {
+            "inputtext" : input,
+            "model" : model
+        }
+        resp = requests.post(url, data)
         print(resp.json())
 
-        responseBody = {
-        "test_loss" : resp.test_loss,
-        "test_acc" : resp.test_acc,
-        "model" : resp.model,
-        "model_url" : resp.model_url 
-        }
-
-
-        sentiment = "positive"
+        sentiment = resp.review
         return {
             "statusCode": 200,
             "headers": {
@@ -168,7 +165,7 @@ def predict(event, context):
                 "Access-Control-Allow-Credentials": True
 
             },
-            "body": json.dumps({"input": input , "predictionValue":0.01, "sentiment": sentiment })
+            "body": json.dumps({"sentiment": sentiment})
         }
     except Exception as e:
         print(repr(e))
