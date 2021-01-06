@@ -3,7 +3,7 @@
   <hr class="my-4">
   <div>
     <p>Plese upload an csv file(*.csv) containing a sentiment text and a sentiment</p>
-    <input type='file' accept=".csv" (change)="onSelectFile($event)" class="btn btn-primary"> <br/>
+    <input type='file' accept=".csv" (change)="onSelectFile($event)" class="btn btn-secondary"> <br/>
     <div *ngIf="filePreview !== ''" class="content">
       <h4><b>File Preview : {{uploadedFile}}</b></h4>
       <table>
