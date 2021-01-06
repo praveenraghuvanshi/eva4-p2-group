@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
    selector: 'app-menu',
    template: `
       <ul>
+         <li><a routerLink="sentimentAnalysisComponent">Image Classification</a></li>
          <li><a routerLink="sentimentAnalysisComponent">Sentiment Analysis</a></li>
       </ul>
    `,
