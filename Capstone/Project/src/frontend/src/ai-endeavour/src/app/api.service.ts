@@ -12,30 +12,30 @@ export class ApiService {
   public upload(file: File): Observable<any> {
     console.log("File to be uploaded: " + file.name);
     const formData = new FormData();
-    formData.append(file.name, file);
+    formData.append('file', file);
 
-    var response = this.httpClient.post<any>('https://xxuj660nkd.execute-api.ap-south-1.amazonaws.com/dev/upload', formData);
+    var response = this.httpClient.post<any>('http://ec2-65-0-116-36.ap-south-1.compute.amazonaws.com/upload', formData);
     return response;
   }
 
   public train(data_file: string): Observable<any> {
     console.log('Training data: ' + data_file);
-    var inputData = {
-      "data": data_file
-    }
-    var response = this.httpClient.post<any>('https://xxuj660nkd.execute-api.ap-south-1.amazonaws.com/dev/train',
-    JSON.stringify(inputData));
+    var trainUrl = 'http://ec2-65-0-116-36.ap-south-1.compute.amazonaws.com/train?data=' + data_file
+    var response = this.httpClient.get<any>(trainUrl);
     return response;
  }
 
-  public predict(input: string, model: string): Observable<any> {
+  public predict(input: string, model: string, fields:string): Observable<any> {
     console.log('Input text: ' + input);
     console.log('Model file: ' + model);
+    console.log('Text fields file: ' + fields);
     var inputData = {
        inputtext : input,
-       model : model
+       model : model,
+       textfields : fields
     }
-    var response = this.httpClient.post<any>('https://xxuj660nkd.execute-api.ap-south-1.amazonaws.com/dev/predict',
+    console.log(JSON.stringify(inputData))
+    var response = this.httpClient.post<any>('http://ec2-65-0-116-36.ap-south-1.compute.amazonaws.com/predict',
     JSON.stringify(inputData));
     return response;
  }

@@ -17,7 +17,8 @@ export class SentimentAnalysisComponent {
   sentimentSentence = '';
   uploadedFile:string = ''
   predictedSentiment = ''
-  model = ''
+  model = '';
+  textfields = ''
   public csvRecords: any[] = [];
 
   constructor(private apiService: ApiService) {  }
@@ -46,7 +47,7 @@ export class SentimentAnalysisComponent {
     this.apiService.upload(this.file).subscribe(data =>
       {
         console.log('Response: ' + JSON.stringify(data));
-        this.uploadedFile = data.uploadedfile;
+        this.uploadedFile = data.file;
         this.isProcessing = false;
       },
       error => { //Error callback
@@ -64,6 +65,8 @@ export class SentimentAnalysisComponent {
       {
         console.log(JSON.stringify(data));
         this.model = data.model;
+        this.textfields = data.text_fields_file;
+        this.isTrained = true;
         this.isProcessing = false;
       },
       error => { //Error callback
@@ -77,7 +80,7 @@ export class SentimentAnalysisComponent {
     this.sentimentSentence = `${value}`;
     console.log('Sentiment Sentence: ' + this.sentimentSentence);
     this.isProcessing = true;
-    this.apiService.predict(this.sentimentSentence, this.model).subscribe(data =>
+    this.apiService.predict(this.sentimentSentence, this.model, this.textfields).subscribe(data =>
       {
         console.log(JSON.stringify(data));
 
