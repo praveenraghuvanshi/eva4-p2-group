@@ -11,8 +11,10 @@ export class SentimentAnalysisComponent {
 
   public response: Observable<any>;
   file:File = null!;
-  isProcessing = false;
-  isTrained = false;
+  uploading = false;
+  training = false;
+  hasTrained = false;
+  predicting = false;
   filePreview:string = '';
   sentimentSentence = '';
   uploadedFile:string = ''
@@ -20,6 +22,8 @@ export class SentimentAnalysisComponent {
   model = '';
   textfields = ''
   public csvRecords: any[] = [];
+  data: any;
+  headers: string[] = [];
 
   constructor(private apiService: ApiService) {  }
 
@@ -31,47 +35,46 @@ export class SentimentAnalysisComponent {
 
     this.file = input.files[0];
     console.log(this.file);
+    this.uploading = true;
     var reader = new FileReader();
     // reader.readAsDataURL(this.file); // read file as data url
     reader.readAsText(this.file);
     reader.onload = (event: Event) => { // called once readAsDataURL is completed
-        this.filePreview = reader.result as string;
-        // Get 10 CSV records
-        let csvData = reader.result;
-        let csvRecordsArray = (csvData as string).split(/\r\n|\n/);
-        for(let i=0;i<10;i++){
-          let rowdata = csvRecordsArray[i].match(/(“[^”]*”)|[^,]+/g);
-          this.csvRecords.push(rowdata);
-      }
+      this.filePreview = reader.result as string;
+      // Get 10 CSV records
+      let csvData = reader.result;
+      const results = this.csvToJSON(csvData as string);
+      this.data = results.data.slice(0, 10);
+      this.headers = results.headers;
     }
     this.apiService.upload(this.file).subscribe(data =>
       {
         console.log('Response: ' + JSON.stringify(data));
         this.uploadedFile = data.file;
-        this.isProcessing = false;
+        this.uploading = false;
       },
       error => { //Error callback
         console.error('error caught in component\nError Details: ' + JSON.stringify(error))
-        this.isProcessing = false;
+        this.uploading = false;
         alert("An error occured while processing the request, Please retry the operation!!!");
       });
   }
 
   trainModel(){
     console.log("Training started...");
-    this.isTrained = false;
-    this.isProcessing = true;
+    this.training = true;
     this.apiService.train(this.uploadedFile).subscribe(data =>
       {
         console.log(JSON.stringify(data));
         this.model = data.model;
         this.textfields = data.text_fields_file;
-        this.isTrained = true;
-        this.isProcessing = false;
+        this.training = false;
+        this.hasTrained = true;
       },
       error => { //Error callback
         console.error('error caught in component\nError Details:' + JSON.stringify(error));
-        this.isProcessing = false;
+        this.training = false;
+        this.hasTrained = true;
         alert("An error occured while processing the request, Please retry the operation!!!");
       });
   }
@@ -79,19 +82,51 @@ export class SentimentAnalysisComponent {
   predictSentiment(value: string): void {
     this.sentimentSentence = `${value}`;
     console.log('Sentiment Sentence: ' + this.sentimentSentence);
-    this.isProcessing = true;
+    this.predicting = true;
     this.apiService.predict(this.sentimentSentence, this.model, this.textfields).subscribe(data =>
       {
         console.log(JSON.stringify(data));
 
         this.predictedSentiment = data.sentiment;
         console.log("Predicted Sentiment: " + this.predictSentiment);
-        this.isProcessing = false;
+        this.predicting = false;
       },
       error => { //Error callback
         console.error('error caught in component\nError Details:' + JSON.stringify(error));
-        this.isProcessing = false;
+        this.predicting = false;
         alert("An error occured while processing the request, Please retry the operation!!!");
       });
   }
+
+    // CSV is assumed to have headers as well
+    // https://stackblitz.com/edit/angular-k162aa?file=src%2Fapp%2Fapp.component.html
+  csvToJSON(csv: string) {
+
+      const lines: string[] = csv
+        // escape everything inside quotes to NOT remove the comma there
+        .replace(/"(.*?)"/gm, (item) => encodeURIComponent(item))
+        .split('\n');
+
+      // separate the headers from the other lines and split them
+      const headers: string[] = lines.shift().split(',');
+
+      // should contain all CSV lines parsed for the html table
+      const data: any[] = lines.map((lineString, index) => {
+        const lineObj = {};
+
+        const lineValues = lineString.split(',');
+
+        headers.forEach((valueName, index) => {
+          // remove trailing spaces and quotes
+          lineObj[valueName] = lineValues[index]
+            // handle quotes
+            .replace(/%22(.*?)%22/gm, (item) => decodeURIComponent(item))
+            .trim();
+        })
+
+        return lineObj; // return lineObj for objects.
+      });
+
+      return { data, headers };
+    }
 }
