@@ -32,7 +32,7 @@ OUTPUT_DIM = 1
 BATCH_SIZE = 64
 N_EPOCHS = 5
 MODEL_FILE = "model.pt"
-BUCKET_NAME = "aiendeavour"
+BUCKET_NAME = "aiendeavourbkt"
 TEXT_FIELDS_FILE = "TEXT_fields.pkl"
 
 model = NONE
