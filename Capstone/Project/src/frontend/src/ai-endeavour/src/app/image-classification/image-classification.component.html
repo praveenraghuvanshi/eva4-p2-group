@@ -6,6 +6,41 @@
   <p>
     Hold on your excitement, We are working hard to build something cool : 😊
   </p>
+  <div>
+    <div class="container">
+      <p>
+        Welcome to Image Classification. An app for an end-to-end Machine Learning lifecycle classifying the image.
+        <br>
+        Steps involved
+      </p>
+      <ul>
+        <li>Upload images</li>
+        <li>Train the model</li>
+        <li>Classify image</li>
+      </ul>
+    </div>
+    <br>
+
+    <h5>Enter project name:</h5>
+    <input #projectnametextbox type="text" [(ngModel)]="projectname" required>
+
+    <!--Upload-->
+    <div class="container">
+      <h1>Upload Images</h1>
+      <hr class="my-4">
+      <input type='file' (change)="OnSelectFolder($event)" class="btn btn-secondary" webkitdirectory mozdirectory msdirectory odirectory directory multiple > <br/>
+      <br>
+      <div class="container" *ngIf="images.length != 0">
+        <h5 class="lead">Preview 10 images</h5>
+        <div class="content">
+          <img *ngFor='let url of images'  [src]="url" height="100" width="150px" style="margin: 3px;">
+        </div>
+      </div>
+      <br>
+    </div>
+    <br>
+
+  </div>
 </main>
 
 
