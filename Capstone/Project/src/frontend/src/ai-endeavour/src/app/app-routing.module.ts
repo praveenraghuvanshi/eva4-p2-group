@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analysis.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { ImageClassificationComponent} from './image-classification/image-classification.component';
+import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analysis.component';
+
 
 @NgModule({
     imports: [
@@ -13,6 +15,10 @@ import { WelcomeComponent } from './welcome/welcome.component';
         {
           path : 'sa',
           component : SentimentAnalysisComponent
+        },
+        {
+          path : 'ic',
+          component : ImageClassificationComponent
         }
       ])
     ],
