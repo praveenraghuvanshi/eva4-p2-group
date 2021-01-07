@@ -1,33 +1,34 @@
 <meta charset="UTF-8">
-<main>
+<main class="container">
   <div class="container">
     <h1 class="display-4">Welcome to AI Endeavour</h1>
-    <img class="img-fluid rounded img-thumbnail" src="../../assets/galaxy.jpg">
-
-    <div class="container-fluid">
-      <!-- Cards -->
-      <div class="row">
-        <div class="col-sm-6">
-          <!--Image Classification-->
-          <div class="card" style="width: 18rem; height: 10rem;">
-            <div class="card-body">
-              <h5 class="card-title">Image Classification</h5>
-              <p class="card-text">Predicts the class or type of an uploaded image</p>
-              <a href="ic" class="btn btn-primary">Analyze</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <!--Sentiment Analysis-->
-          <div class="card" style="width: 18rem; height: 10rem;">
-            <div class="card-body">
-              <h5 class="card-title">Sentiment Analysis</h5>
-              <p class="card-text">Predicts a sentiment to be positive 😊 or 😔</p>
-              <a href="sa" class="btn btn-primary">Analyze</a>
-            </div>
+    <img class="img-responsive" src="../../assets/galaxy.jpg">
+  </div>
+  <br>
+  <div class="container-fluid">
+    <!-- Cards -->
+    <div class="row">
+      <div class="col-sm-6">
+        <!--Image Classification-->
+        <div class="card" style="width: 18rem; height: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">Image Classification</h5>
+            <p class="card-text">Predicts the class or type of an uploaded image</p>
+            <a href="ic" class="btn btn-secondary">Analyze</a>
           </div>
         </div>
       </div>
+      <div class="col-sm-4">
+        <!--Sentiment Analysis-->
+        <div class="card" style="width: 18rem; height: 10rem;">
+          <div class="card-body">
+            <h5 class="card-title">Sentiment Analysis</h5>
+            <p class="card-text">Predicts a sentiment to be <br>😊 / 😔</p>
+            <a href="sa" class="btn btn-secondary">Analyze</a>
+          </div>
+        </div>
+      </div>
+      <div class="w-100"></div>
     </div>
   </div>
 </main>
