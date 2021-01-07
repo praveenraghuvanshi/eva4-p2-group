@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analysis.component';
+import { WelcomeComponent } from './welcome/welcome.component';
 
 @NgModule({
     imports: [
       RouterModule.forRoot([
         {
           path : '',
-          redirectTo : 'sentimentAnalysisComponent',
-          pathMatch: 'full'
+          component : WelcomeComponent
         },
         {
-          path : 'sentimentAnalysisComponent',
+          path : 'sa',
           component : SentimentAnalysisComponent
         }
       ])
