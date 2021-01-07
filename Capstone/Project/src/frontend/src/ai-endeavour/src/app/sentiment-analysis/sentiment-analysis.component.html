@@ -3,9 +3,21 @@
     <h1 class="display-4">Sentiment Analysis App</h1>
     <hr class="my-4">
   </div>
-    <div>
+    <div class="container">
+      <p>Welcome to Sentiment Analysis. This app covers an end-to-end Machine Learning lifecycle comprising of below steps</p>
+      <ul class="list-group">
+        <li class="list-group-item">Upload dataset</li>
+        <li class="list-group-item">Train the model</li>
+        <li class="list-group-item">Make Prediction</li>
+      </ul>
+    </div>
+    <br>
+    <!--Upload-->
+    <div class="container-fluid">
+      <h1 class="lead"><b>Upload Dataset</b></h1>
       <p>Plese upload an csv file(*.csv) containing a sentiment text and a sentiment.
-        <br>NOTE: Currently files containing header is only supported </p>
+        <br>NOTE: Currently files containing header is only supported
+      </p>
       <input type='file' accept=".csv" (change)="onSelectFile($event)" class="btn btn-secondary"> <br/>
       <br>
       <div *ngIf="filePreview !== ''" class="content">
@@ -29,15 +41,22 @@
         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
       </div>
       <label>{{uploadedFile}}</label>
+    </div>
+    <br>
+    <!--Train-->
+    <div class="container">
       <div *ngIf="uploadedFile !== ''">
         <button class="btn btn-secondary" (click)="trainModel()">Train</button>
         <div class="progress" *ngIf="training === true">
           <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
         </div>
       </div>
+    </div>
+    <br>
+    <!--Prediction-->
+    <div class="container">
       <div *ngIf="filePreview !== '' && hasTrained === true">
-        <p>Plese enter a sentence for predicting its sentiment: </p>
-        <input #sentimenttextbox type="text" [(ngModel)]="sentimentSentence" required>
+        <input #sentimenttextbox type="text" [(ngModel)]="sentimentSentence" required placeholder="Enter a sentence">
         <p class="lead">{{sentimentSentence}}</p>
         <p class="lead" *ngIf="sentimentSentence !== ''">
           <button class="btn btn-secondary" (click)="predictSentiment(sentimenttextbox.value)">Predict</button>
@@ -46,16 +65,16 @@
           <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
         </div>
       </div>
-    </div>
-    <div>
-      <p class="lead">
-        Prediction:
-        <ng-template [ngIf]="predictedSentiment=='positive'" [ngIfElse]="negativeTemplate">
-          😊
-        </ng-template>
-        <ng-template #negativeTemplate>
-          😔
-        </ng-template>
-      </p>
+      <div *ngIf="predictedSentiment !== ''">
+        <p class="lead">
+          Prediction:
+          <ng-template [ngIf]="predictedSentiment=='positive'" [ngIfElse]="negativeTemplate">
+            😊
+          </ng-template>
+          <ng-template #negativeTemplate>
+            😔
+          </ng-template>
+        </p>
+      </div>
     </div>
 </main>
