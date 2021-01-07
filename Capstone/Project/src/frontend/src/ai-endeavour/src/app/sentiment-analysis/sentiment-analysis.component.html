@@ -47,7 +47,15 @@
         </div>
       </div>
     </div>
-    <div *ngIf="predictedSentiment !== ''">
-      <p class="lead">Prediction: {{predictedSentiment}}</p>
+    <div>
+      <p class="lead">
+        Prediction:
+        <ng-template [ngIf]="predictedSentiment=='positive'" [ngIfElse]="negativeTemplate">
+          😊
+        </ng-template>
+        <ng-template #negativeTemplate>
+          😔
+        </ng-template>
+      </p>
     </div>
 </main>

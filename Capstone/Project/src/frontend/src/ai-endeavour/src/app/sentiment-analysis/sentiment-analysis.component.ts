@@ -87,7 +87,7 @@ export class SentimentAnalysisComponent {
       {
         console.log(JSON.stringify(data));
 
-        this.predictedSentiment = data.sentiment;
+        this.predictedSentiment = data.prediction;
         console.log("Predicted Sentiment: " + this.predictSentiment);
         this.predicting = false;
       },
