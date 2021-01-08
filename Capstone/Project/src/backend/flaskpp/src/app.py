@@ -6,8 +6,10 @@ from flask import Flask
 from flask import request, jsonify, make_response
 from train import train_model, predict_sentiment, upload_data
 from werkzeug.utils import secure_filename
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def home():
@@ -20,7 +22,7 @@ def upload():
     uploadedFileUrl = ''
     if request.method == 'POST':
         print(request.files)
-        f = request.files['']
+        f = request.files['file']
         f.save(secure_filename(f.filename))
         uploadedFileUrl = upload_data(f.filename)     
 
@@ -40,9 +42,11 @@ def predict():
     if request.method == "OPTIONS": # CORS preflight
         return _build_cors_prelight_response()
     elif request.method == "POST": # The actual request following the preflight
-        sentence  = request.json['inputtext']
-        modelName = request.json['model']
-        textFields = request.json["textfields"]
+        print('Inside POST')
+        print(request.data)
+        sentence  = json.loads(request.data)['inputtext']
+        modelName = json.loads(request.data)['model']
+        textFields = json.loads(request.data)["textfields"]
         
         predValue = predict_sentiment(sentence, modelName, textFields)
         print('Predicted value',predValue)
