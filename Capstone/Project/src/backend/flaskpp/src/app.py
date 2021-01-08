@@ -4,8 +4,8 @@ from flask import Flask
 from flask import request, jsonify, make_response
 from flask_cors import CORS
 
-from upload import upload_file
-from train import train_model, predict_sentiment
+from uploaddownload import upload_file
+from sentimentanalysis import train_model_sa, predict_sentiment
 
 app = Flask(__name__)
 CORS(app)
@@ -34,10 +34,10 @@ def upload():
         return _corsify_actual_response(jsonify(response))
 
 @app.route("/train/sa")
-def train():
+def train_sa():
     data_file = request.args.get('data')
     print(data_file)
-    return train_model(data_file)
+    return train_model_sa(data_file)
 
 @app.route("/predict", methods=['POST'])
 def predict():

@@ -40,11 +40,6 @@ def get_file_path(file):
         raise RuntimeError("Unsupported File type")
 
 ### AWS Specific Functions
-
-def download_from_s3(local_file, remote_file):
-    s3.Bucket(BUCKET_NAME).download_file(remote_file, local_file)
-    return local_file
-
 def upload_to_s3(localFile, remoteFile):
     s3.Bucket(BUCKET_NAME).upload_file(localFile, remoteFile)
     uploadedFileUrl = "https://s3-%s.amazonaws.com/%s/%s" % (
@@ -55,3 +50,7 @@ def upload_to_s3(localFile, remoteFile):
     print('S3 uploaded file Url is ' + remoteFile)
     print("S3 url is " + uploadedFileUrl)
     return uploadedFileUrl
+
+def download_from_s3(local_file, remote_file):
+    s3.Bucket(BUCKET_NAME).download_file(remote_file, local_file)
+    return local_file

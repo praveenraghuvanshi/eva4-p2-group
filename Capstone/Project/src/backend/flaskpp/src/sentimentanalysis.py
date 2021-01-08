@@ -16,6 +16,7 @@ try:
     nltk.download('stopwords')
     SEED = 1234
     from nltk.corpus import stopwords
+    from uploaddownload import upload_to_s3, download_from_s3
     torch.manual_seed(SEED)
     torch.cuda.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True
@@ -158,18 +159,7 @@ def download_from_s3(local_file, remote_file):
     s3.Bucket(BUCKET_NAME).download_file(remote_file, local_file)
     return local_file
 
-def upload_to_s3(localFile, remoteFile):
-    s3.Bucket(BUCKET_NAME).upload_file(localFile, remoteFile)
-    uploadedFileUrl = "https://s3-%s.amazonaws.com/%s/%s" % (
-        "ap-south-1",
-        BUCKET_NAME,
-        urllib.parse.quote(remoteFile, safe="~()*!.'"),
-    )
-    print('S3 uploaded file Url is ' + remoteFile)
-    print("S3 url is " + uploadedFileUrl)
-    return uploadedFileUrl
-
-def train_model(data_file):
+def train_model_sa(data_file):
     # Load Data
     train_data, test_data, valid_data = load_data(data_file)
     print(vars(train_data.examples[0]))
