@@ -155,11 +155,7 @@ def load_data(filePath):
 
     return train_data, test_data, valid_data
 
-def download_from_s3(local_file, remote_file):
-    s3.Bucket(BUCKET_NAME).download_file(remote_file, local_file)
-    return local_file
-
-def train_model_sa(data_file):
+def train_model(data_file):
     # Load Data
     train_data, test_data, valid_data = load_data(data_file)
     print(vars(train_data.examples[0]))

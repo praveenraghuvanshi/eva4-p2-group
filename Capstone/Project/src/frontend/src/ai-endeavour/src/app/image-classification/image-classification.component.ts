@@ -12,7 +12,10 @@ export class ImageClassificationComponent {
   projectname = ''
   selectedImageSrc = '';
   classifiedImage = '';
+  baseDirectory = '';
   uploadedImagesCount = 0
+  accuracy = 0;
+  model = '';
   uploading = false;
   uploaded = false;
   training = false;
@@ -59,6 +62,8 @@ export class ImageClassificationComponent {
       var path = files[0].webkitRelativePath;
       var Folder = path.split("/");
       console.log('Selected Folder: ' + Folder[0]);
+      this.baseDirectory = Folder[0];
+      console.log('Base Directory: ' + this.baseDirectory);
       var filesCount = files.length;
       this.uploadedImagesCount = filesCount;
       var previewCount = filesCount <= 10  ? filesCount : 10;
@@ -94,10 +99,21 @@ export class ImageClassificationComponent {
 
   trainModel(){
     this.training = true;
-    setTimeout(() => {
-      this.trained = true;
-      this.training = false;
-    }, 5000);
+    this.apiService.train_ic(this.baseDirectory).subscribe(data =>
+      {
+        console.log(JSON.stringify(data));
+        this.training = false;
+        this.trained = true;
+        this.accuracy = Math.round(data.test_acc * 100 * 100) / 100;
+        this.model = data.model;
+        console.log("Training completed, Accuracy: " + this.accuracy);
+      },
+      error => { //Error callback
+        console.error('error caught in component\nError Details:' + JSON.stringify(error));
+        this.training = false;
+        this.trained = true;
+        alert("An error occured while processing the request, Please retry the operation!!!");
+      });
   }
 
   classify(){

@@ -64,7 +64,7 @@ export class SentimentAnalysisComponent {
   trainModel(){
     console.log("Training started...");
     this.training = true;
-    this.apiService.train(this.uploadedFile).subscribe(data =>
+    this.apiService.train_sa(this.uploadedFile).subscribe(data =>
       {
         console.log(JSON.stringify(data));
         this.training = false;
@@ -86,7 +86,7 @@ export class SentimentAnalysisComponent {
     this.sentimentSentence = `${value}`;
     console.log('Sentiment Sentence: ' + this.sentimentSentence);
     this.predicting = true;
-    this.apiService.predict(this.sentimentSentence, this.model, this.textfields).subscribe(data =>
+    this.apiService.predict_sentiment(this.sentimentSentence, this.model, this.textfields).subscribe(data =>
       {
         console.log(JSON.stringify(data));
 
