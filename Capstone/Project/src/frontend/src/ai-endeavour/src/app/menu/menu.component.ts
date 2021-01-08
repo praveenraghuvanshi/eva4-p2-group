@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
    selector: 'app-menu',
    template: `
       <ul>
-         <li><a routerLink="sentimentAnalysisComponent">Image Classification</a></li>
-         <li><a routerLink="sentimentAnalysisComponent">Sentiment Analysis</a></li>
+         <li><a href="ic">Image Classification</a></li>
+         <li><a href="sa">Sentiment Analysis</a></li>
       </ul>
    `,
    styles: [`
