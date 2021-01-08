@@ -28,18 +28,71 @@
     <div class="container">
       <h1>Upload Images</h1>
       <hr class="my-4">
+      <p>Plese upload a folder containing images and segregated by folders of different classes</p>
+      <br>
       <input type='file' (change)="OnSelectFolder($event)" class="btn btn-secondary" webkitdirectory mozdirectory msdirectory odirectory directory multiple > <br/>
       <br>
-      <div class="container" *ngIf="images.length != 0">
+      <div class="container" *ngIf="previewImages.length > 0">
+        <h5 class="lead">Images Metadata</h5>
+        <ul>
+          <li>Total Images: {{uploadedImagesCount}}</li>
+          <li>Classes
+            <ul>
+              <li *ngFor="let class of classes"> {{ class }} </li>
+            </ul>
+          </li>
+        </ul>
         <h5 class="lead">Preview 10 images</h5>
         <div class="content">
-          <img *ngFor='let url of images'  [src]="url" height="100" width="150px" style="margin: 3px;">
+          <img *ngFor='let url of previewImages'  [src]="url" height="100" width="150px" style="margin: 3px;">
+        </div>
+        <div class="progress" *ngIf="uploading === true">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
         </div>
       </div>
       <br>
     </div>
     <br>
 
+    <!--Train-->
+    <div class="container">
+      <div *ngIf="uploaded === true">
+        <h1>Train the Model</h1>
+        <hr class="my-4">
+        <p>
+          <button class="btn btn-secondary" (click)="trainModel()">Train</button>
+        </p>
+        <div class="progress" *ngIf="training === true">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+    <!--Prediction-->
+    <div class="container">
+      <div *ngIf="trained === true">
+        <h1>Classify</h1>
+        <hr class="my-4">
+        <p>Plese upload an image from one of the class determined</p>
+        <input type='file' accept=".jpg" (change)="onSelectFile($event)" class="btn btn-secondary"> <br/>
+        <br>
+        <img [src]="selectedImageSrc" *ngIf="selectedImageSrc" height="150" width="200px" style="margin: 3px;">
+        <br>
+        <p class="lead" *ngIf="selectedImageSrc !== ''">
+          <button class="btn btn-secondary" (click)="classify()">Classify</button>
+        </p>
+        <div class="progress" *ngIf="predicting === true">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
+        </div>
+      </div>
+      <br>
+      <div *ngIf="classifiedImage">
+        <p class="lead">
+          Classification: {{classifiedImage}}
+        </p>
+      </div>
+    </div>
   </div>
 </main>
 
