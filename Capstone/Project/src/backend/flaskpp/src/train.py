@@ -169,10 +169,6 @@ def upload_to_s3(localFile, remoteFile):
     print("S3 url is " + uploadedFileUrl)
     return uploadedFileUrl
 
-def upload_data(filename):
-    return upload_to_s3(filename, filename)
-
-
 def train_model(data_file):
     # Load Data
     train_data, test_data, valid_data = load_data(data_file)
