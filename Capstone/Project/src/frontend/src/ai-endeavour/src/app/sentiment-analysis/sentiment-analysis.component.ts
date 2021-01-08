@@ -21,6 +21,7 @@ export class SentimentAnalysisComponent {
   predictedSentiment = ''
   model = '';
   textfields = ''
+  accuracy = 0
   public csvRecords: any[] = [];
   data: any;
   headers: string[] = [];
@@ -66,10 +67,12 @@ export class SentimentAnalysisComponent {
     this.apiService.train(this.uploadedFile).subscribe(data =>
       {
         console.log(JSON.stringify(data));
-        this.model = data.model;
-        this.textfields = data.text_fields_file;
         this.training = false;
         this.hasTrained = true;
+        this.model = data.model;
+        this.textfields = data.text_fields_file;
+        this.accuracy = Math.round(data.test_acc * 100 * 100) / 100;
+        console.log("Training completed, Accuracy: " + this.accuracy);
       },
       error => { //Error callback
         console.error('error caught in component\nError Details:' + JSON.stringify(error));
@@ -87,8 +90,8 @@ export class SentimentAnalysisComponent {
       {
         console.log(JSON.stringify(data));
 
-        this.predictedSentiment = data.prediction;
-        console.log("Predicted Sentiment: " + this.predictSentiment);
+        this.predictedSentiment = data.prediction.toLowerCase();
+        console.log("Predicted Sentiment: " + this.predictedSentiment);
         this.predicting = false;
       },
       error => { //Error callback

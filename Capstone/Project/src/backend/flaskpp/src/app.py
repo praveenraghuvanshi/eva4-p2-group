@@ -33,7 +33,7 @@ def upload():
         print(f'Upload completed: {response}')
         return _corsify_actual_response(jsonify(response))
 
-@app.route("/train")
+@app.route("/train/sa")
 def train():
     data_file = request.args.get('data')
     print(data_file)
