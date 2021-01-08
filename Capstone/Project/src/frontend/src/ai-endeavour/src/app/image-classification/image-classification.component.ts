@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-image-classification',
@@ -6,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./image-classification.component.css']
 })
 export class ImageClassificationComponent {
+  public response: Observable<any>;
   projectname = ''
   selectedImageSrc = '';
   classifiedImage = '';
@@ -18,7 +21,7 @@ export class ImageClassificationComponent {
   previewImages = []
   classes = []
 
-  constructor() { }
+  constructor(private apiService: ApiService) { }
 
   onSelectFile(event) { // called each time file input changes
     if (event.target.files && event.target.files[0]){
@@ -66,22 +69,27 @@ export class ImageClassificationComponent {
                 if(i == 9){
                   this.uploaded = true;
                   this.uploading = false;
+
+                  // Upload to server
+                  for(let index = 0; index < files.length; index++){
+                    this.apiService.upload(files[index]).subscribe(data =>
+                      {
+                        console.log('Response: ' + JSON.stringify(data));
+                        if(index == files.length - 1){
+                          this.uploading = false;
+                        }
+                      },
+                      error => { //Error callback
+                        console.error('Error caught in component\n' + JSON.stringify(error))
+                        this.uploading = false;
+                        alert("An error occured while processing the request, Please retry the operation!!!");
+                      });
+                  }
                 }
               }
               reader.readAsDataURL(event.target.files[i]);
       }
     }
-  }
-
-  extractClasses(files: FileList){
-    var extractedClasses = [];
-    for (let index = 0; index < files.length; index++){
-      /*var filename = files[index].webkitRelativePath;
-      if(filename !== ''){
-        console.log(filename.split('/')[1]);
-      }*/
-    }
-    return extractedClasses;
   }
 
   trainModel(){

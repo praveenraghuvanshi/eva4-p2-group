@@ -1,12 +1,11 @@
 import os
-import io
 import json
-import re
 from flask import Flask
 from flask import request, jsonify, make_response
-from train import train_model, predict_sentiment, upload_data
-from werkzeug.utils import secure_filename
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
+
+from upload import upload_file
+from train import train_model, predict_sentiment
 
 app = Flask(__name__)
 CORS(app)
@@ -17,19 +16,22 @@ def home():
 
 @app.route("/upload", methods=['POST'])
 def upload():
-    print("Inside upload")
-    f:any = None
-    uploadedFileUrl = ''
-    if request.method == 'POST':
+    print("Upload started")
+    if request.method == "OPTIONS": # CORS preflight
+        return _build_cors_prelight_response()
+    elif request.method == "POST": # The actual request following the preflight
+        f:any = None
+        uploadedFileUrl = ''
         print(request.files)
         f = request.files['file']
-        f.save(secure_filename(f.filename))
-        uploadedFileUrl = upload_data(f.filename)     
+        uploadedFileUrl = upload_file(f)
 
-    return {
-        "file" : f.filename,
-        "uploadedFileUrl" : uploadedFileUrl,
-    } 
+        response = {
+                "file" : f.filename,
+                "uploadedFileUrl" : uploadedFileUrl,
+            }
+        print(f'Upload completed: {response}')
+        return _corsify_actual_response(jsonify(response))
 
 @app.route("/train")
 def train():
@@ -57,6 +59,7 @@ def predict():
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
 
+'''Handling CORS issues'''
 def _build_cors_prelight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
