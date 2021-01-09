@@ -9,7 +9,6 @@ import { ApiService } from '../api.service';
 })
 export class ImageClassificationComponent {
   public response: Observable<any>;
-  projectname = ''
   selectedImageSrc = '';
   classifiedImageResult = '';
   baseDirectory = '';
