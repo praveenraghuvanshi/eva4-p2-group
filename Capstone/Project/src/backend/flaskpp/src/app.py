@@ -1,4 +1,5 @@
 import json
+import base64
 from flask import Flask
 from flask import request, jsonify, make_response
 from flask_cors import CORS
@@ -60,7 +61,6 @@ def predict():
         print('Predicted value',predValue)
         review = "Positive" if predValue >= 0.5 else "Negative"
         print(review)
-        response = make_response()
         return _corsify_actual_response(jsonify({'prediction': review}))
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
@@ -71,17 +71,23 @@ def classify():
         return _build_cors_prelight_response()
     elif request.method == "POST": # The actual request following the preflight
         print('Inside POST')
-        print(request.data)
-        imagePath  = json.loads(request.data)['image']
+        # print(request.data)
+        import base64
+        # print(request.data)
+        img_data = json.loads(request.data)['image']
         modelName = json.loads(request.data)['model']
 
-        '''predValue = sentimentanalysis.predict_sentiment(sentence, modelName, textFields)
-        print('Predicted value',predValue)
-        review = "Positive" if predValue >= 0.5 else "Negative"
-        print(review)'''
-        classificationResult = "cat"
-        response = make_response()
-        return _corsify_actual_response(jsonify({'result': classificationResult}))
+        img_data = img_data[23:]
+        encoded=img_data.encode('utf-8')
+        array=bytearray(encoded)
+
+        print(img_data)
+        imagePath = "ImageToBePredicted.png"
+        with open(imagePath, "wb") as fh:
+            fh.write(base64.decodebytes(array))
+
+        result = imageclassification.classify_image(imagePath, modelName)
+        return _corsify_actual_response(jsonify({'result': result}))
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
 
