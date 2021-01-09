@@ -44,7 +44,13 @@ def train_sa():
 def train_ic():
     data_file = request.args.get('data')
     print(data_file)
-    return imageclassification.train_model()
+    (model, test_loss, test_acc, class_to_idx) = imageclassification.train_model(data_file)
+    return {
+        "model": model,
+        "test_loss" : test_loss,
+        "test_acc": test_acc,
+        "class_to_idx": class_to_idx
+    }
 
 @app.route("/predict", methods=['POST'])
 def predict():
@@ -71,17 +77,13 @@ def classify():
         return _build_cors_prelight_response()
     elif request.method == "POST": # The actual request following the preflight
         print('Inside POST')
-        # print(request.data)
-        import base64
-        # print(request.data)
+
         img_data = json.loads(request.data)['image']
         modelName = json.loads(request.data)['model']
 
         img_data = img_data[23:]
         encoded=img_data.encode('utf-8')
         array=bytearray(encoded)
-
-        print(img_data)
         imagePath = "ImageToBePredicted.png"
         with open(imagePath, "wb") as fh:
             fh.write(base64.decodebytes(array))

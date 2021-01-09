@@ -23,6 +23,7 @@ export class ImageClassificationComponent {
   classifying = false;
   previewImages = []
   classes = []
+  class_to_idx = {}
 
   constructor(private apiService: ApiService) { }
 
@@ -104,8 +105,9 @@ export class ImageClassificationComponent {
         console.log(JSON.stringify(data));
         this.training = false;
         this.trained = true;
-        this.accuracy = Math.round(data.test_acc * 100 * 100) / 100;
+        this.accuracy = Math.round(data.test_acc * 100) / 100;
         this.model = data.model;
+        this.class_to_idx = data.class_to_idx
         console.log("Training completed, Accuracy: " + this.accuracy);
       },
       error => { //Error callback
@@ -122,7 +124,12 @@ export class ImageClassificationComponent {
       {
         console.log(JSON.stringify(data));
         this.classifying = false;
-        this.classifiedImageResult = data.result;
+        Object.entries(this.class_to_idx).forEach(([key, value]) => {
+          console.log(key, value);
+          if(value === data.result){
+            this.classifiedImageResult = key;
+          }
+        });
         console.log("Classification Result: " + this.classifiedImageResult);
       },
       error => { //Error callback
