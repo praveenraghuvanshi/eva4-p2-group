@@ -1,11 +1,11 @@
-import os
 import json
 from flask import Flask
 from flask import request, jsonify, make_response
 from flask_cors import CORS
 
+import sentimentanalysis
+import imageclassification
 from uploaddownload import upload_file
-from sentimentanalysis import train_model_sa, predict_sentiment
 
 app = Flask(__name__)
 CORS(app)
@@ -37,7 +37,13 @@ def upload():
 def train_sa():
     data_file = request.args.get('data')
     print(data_file)
-    return train_model_sa(data_file)
+    return sentimentanalysis.train_model(data_file)
+
+@app.route("/train/ic")
+def train_ic():
+    data_file = request.args.get('data')
+    print(data_file)
+    return imageclassification.train_model()
 
 @app.route("/predict", methods=['POST'])
 def predict():
@@ -50,12 +56,32 @@ def predict():
         modelName = json.loads(request.data)['model']
         textFields = json.loads(request.data)["textfields"]
         
-        predValue = predict_sentiment(sentence, modelName, textFields)
+        predValue = sentimentanalysis.predict_sentiment(sentence, modelName, textFields)
         print('Predicted value',predValue)
         review = "Positive" if predValue >= 0.5 else "Negative"
         print(review)
         response = make_response()
         return _corsify_actual_response(jsonify({'prediction': review}))
+    else:
+        raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
+
+@app.route("/classify", methods=['POST'])
+def classify():
+    if request.method == "OPTIONS": # CORS preflight
+        return _build_cors_prelight_response()
+    elif request.method == "POST": # The actual request following the preflight
+        print('Inside POST')
+        print(request.data)
+        imagePath  = json.loads(request.data)['image']
+        modelName = json.loads(request.data)['model']
+
+        '''predValue = sentimentanalysis.predict_sentiment(sentence, modelName, textFields)
+        print('Predicted value',predValue)
+        review = "Positive" if predValue >= 0.5 else "Negative"
+        print(review)'''
+        classificationResult = "cat"
+        response = make_response()
+        return _corsify_actual_response(jsonify({'result': classificationResult}))
     else:
         raise RuntimeError("Weird - don't know how to handle method {}".format(request.method))
 

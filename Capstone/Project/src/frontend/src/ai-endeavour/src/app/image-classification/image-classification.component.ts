@@ -11,7 +11,7 @@ export class ImageClassificationComponent {
   public response: Observable<any>;
   projectname = ''
   selectedImageSrc = '';
-  classifiedImage = '';
+  classifiedImageResult = '';
   baseDirectory = '';
   uploadedImagesCount = 0
   accuracy = 0;
@@ -20,7 +20,7 @@ export class ImageClassificationComponent {
   uploaded = false;
   training = false;
   trained = false;
-  predicting = false;
+  classifying = false;
   previewImages = []
   classes = []
 
@@ -117,10 +117,18 @@ export class ImageClassificationComponent {
   }
 
   classify(){
-    this.predicting = true;
-    setTimeout(() => {
-      this.predicting = false;
-      this.classifiedImage = "Cat";
-    }, 5000);
+    this.classifying = true;
+    this.apiService.classify(this.selectedImageSrc, this.model).subscribe(data =>
+      {
+        console.log(JSON.stringify(data));
+        this.classifying = false;
+        this.classifiedImageResult = data.result;
+        console.log("Classification Result: " + this.classifiedImageResult);
+      },
+      error => { //Error callback
+        console.error('error caught in component\nError Details:' + JSON.stringify(error));
+        this.classifying = false;
+        alert("An error occured while processing the request, Please retry the operation!!!");
+      });
   }
 }

@@ -71,7 +71,7 @@
     </div>
     <br>
 
-    <!--Prediction-->
+    <!--Classification-->
     <div class="container">
       <div *ngIf="trained === true">
         <h1>Classify</h1>
@@ -84,14 +84,14 @@
         <p class="lead" *ngIf="selectedImageSrc !== ''">
           <button class="btn btn-secondary" (click)="classify()">Classify</button>
         </p>
-        <div class="progress" *ngIf="predicting === true">
+        <div class="progress" *ngIf="classifying === true">
           <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%; background-color:gray"></div>
         </div>
       </div>
       <br>
-      <div *ngIf="classifiedImage">
+      <div *ngIf="classifiedImageResult">
         <p class="lead">
-          Classification: {{classifiedImage}}
+          Classification: {{classifiedImageResult}}
         </p>
       </div>
     </div>

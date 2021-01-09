@@ -7,6 +7,8 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
 
+  BASE_URL = 'http://127.0.0.1:5000';
+
   constructor(private httpClient: HttpClient) { }
 
   public upload(file: File): Observable<any> {
@@ -14,18 +16,19 @@ export class ApiService {
     const formData = new FormData();
     formData.append('file', file);
 
-    var response = this.httpClient.post<any>('http://ec2-65-0-116-36.ap-south-1.compute.amazonaws.com/upload', formData);
+    var response = this.httpClient.post<any>(this.BASE_URL + '/upload', formData);
     return response;
   }
 
-  public train(data_file: string): Observable<any> {
+  // Sentiment Analysis
+  public train_sa(data_file: string): Observable<any> {
     console.log('Training data: ' + data_file);
-    var trainUrl = 'http://ec2-65-0-116-36.ap-south-1.compute.amazonaws.com/train?data=' + data_file
+    var trainUrl = this.BASE_URL + '/train/sa?data=' + data_file
     var response = this.httpClient.get<any>(trainUrl);
     return response;
  }
 
-  public predict(input: string, model: string, fields:string): Observable<any> {
+  public predict_sentiment(input: string, model: string, fields:string): Observable<any> {
     console.log('Input text: ' + input);
     console.log('Model file: ' + model);
     console.log('Text fields file: ' + fields);
@@ -35,7 +38,29 @@ export class ApiService {
        textfields : fields
     }
     console.log(JSON.stringify(inputData))
-    var response = this.httpClient.post<any>('http://ec2-65-0-116-36.ap-south-1.compute.amazonaws.com/predict',
+    var response = this.httpClient.post<any>(this.BASE_URL + '/predict',
+    JSON.stringify(inputData));
+    return response;
+ }
+
+  // Image Classification
+  public train_ic(base_directory: string): Observable<any> {
+    console.log('Base directory: ' + base_directory);
+    var trainUrl = this.BASE_URL + '/train/ic?data=' + base_directory;
+    var response = this.httpClient.get<any>(trainUrl);
+    return response;
+  }
+
+  public classify(image: string, model: string): Observable<any> {
+    console.log('Image Src: ' + image);
+    console.log('Model file: ' + model);
+
+    var inputData = {
+       image : image,
+       model : model
+    }
+    console.log(JSON.stringify(inputData))
+    var response = this.httpClient.post<any>(this.BASE_URL + '/classify',
     JSON.stringify(inputData));
     return response;
  }
