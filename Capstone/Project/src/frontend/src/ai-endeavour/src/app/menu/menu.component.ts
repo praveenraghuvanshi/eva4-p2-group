@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
    selector: 'app-menu',
    template: `
       <ul>
+         <li><a href="/">Home</a></li>
          <li><a href="ic">Image Classification</a></li>
          <li><a href="sa">Sentiment Analysis</a></li>
       </ul>
@@ -13,7 +14,7 @@ import { Component } from '@angular/core';
       li {display: inline-block;}
       a {
          border: 1px solid #666666;
-         background: #aaaaaa; border-radius: 5px;
+         background: black; border-radius: 5px;
          box-shadow: 1px 1px 5px black;
          color: white;
          font-weight: bold;
