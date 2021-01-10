@@ -10,6 +10,11 @@ import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analy
       RouterModule.forRoot([
         {
           path : '',
+          pathMatch : "full",
+          redirectTo : 'home'
+        },
+        {
+          path : 'home',
           component : WelcomeComponent
         },
         {

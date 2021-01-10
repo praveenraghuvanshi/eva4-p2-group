@@ -12,7 +12,6 @@ export class ApiService {
   constructor(private httpClient: HttpClient) { }
 
   public upload(file: File): Observable<any> {
-    console.log("File to be uploaded: " + file.name);
     const formData = new FormData();
     formData.append('file', file);
 

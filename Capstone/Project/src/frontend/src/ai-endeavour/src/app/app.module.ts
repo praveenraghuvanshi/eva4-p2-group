@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { ImageClassificationComponent } from './image-classification/image-classification.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ImageClassificationComponent } from './image-classification/image-class
     SentimentAnalysisComponent,
     MenuComponent,
     WelcomeComponent,
-    ImageClassificationComponent
+    ImageClassificationComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
