@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
 
-  BASE_URL = 'http://127.0.0.1:5000';
+  BASE_URL = 'http://ec2-13-235-64-240.ap-south-1.compute.amazonaws.com';
 
   constructor(private httpClient: HttpClient) { }
 
