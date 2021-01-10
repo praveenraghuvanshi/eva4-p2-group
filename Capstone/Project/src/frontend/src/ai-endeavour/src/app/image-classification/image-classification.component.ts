@@ -48,6 +48,12 @@ export class ImageClassificationComponent {
         return;
       }
 
+      var path = files[0].webkitRelativePath;
+      var Folder = path.split("/");
+      console.log('Selected Folder: ' + Folder[0]);
+      this.baseDirectory = Folder[0];
+      console.log('Base Directory: ' + this.baseDirectory);
+
       this.classes = this.getClasses(files);
       this.uploadedImagesCount = files.length;
       var previewCount = this.uploadedImagesCount <= 10  ? this.uploadedImagesCount : 10;
@@ -61,30 +67,43 @@ export class ImageClassificationComponent {
         reader.readAsDataURL(event.target.files[i]);
       }
 
-      this.uploaded = true;
-      this.uploading = false;
+      // Clear data before upload of all files
+      this.apiService.clear(this.baseDirectory).subscribe(data =>
+        {
+          console.log(JSON.stringify(data));
+          console.log("Data deleted");
 
-      // Upload to server
-      const MAX_FILE_UPLOAD = 1000;
-      var noOfFilesToUpload = files.length;
-      if(files.length > MAX_FILE_UPLOAD){
-        noOfFilesToUpload = MAX_FILE_UPLOAD;
-      }
-      for(let index = 0; index < noOfFilesToUpload; index++) {
-        this.apiService.upload(files[index]).subscribe(data =>
-          {
-            if(index == noOfFilesToUpload - 1) {
-              this.uploading = false;
-              this.uploaded = true;
-              console.log("Uploaded " + index + " files");
-            }
-          },
-          error => { //Error callback
-            console.error('Error caught in component\n' + JSON.stringify(error))
-            this.uploading = false;
-            alert("An error occured while processing the request, Please retry the operation!!!");
-          });
-      }
+          // Upload to server
+          const MAX_FILE_UPLOAD = 1000;
+          var noOfFilesToUpload = files.length;
+          if(files.length > MAX_FILE_UPLOAD){
+            noOfFilesToUpload = MAX_FILE_UPLOAD;
+          }
+          for(let index = 0; index < noOfFilesToUpload; index++) {
+            this.apiService.upload(files[index]).subscribe(data =>
+              {
+                if(index == noOfFilesToUpload - 1) {
+                  this.uploading = false;
+                  this.uploaded = true;
+                  console.log("Uploaded " + index + " files");
+                }
+                setTimeout(() => {
+                  // console.log("FIle uploaded: " + files[index].name);
+                }, 100);
+              },
+              error => { //Error callback
+                console.error('Error caught in component\n' + JSON.stringify(error))
+                this.uploading = false;
+                alert("An error occured while processing the request, Please retry the operation!!!");
+              });
+          }
+        },
+        error => { //Error callback
+          console.error('error caught in component\nError Details:' + JSON.stringify(error));
+          this.training = false;
+          this.trained = true;
+          alert("An error occured while processing the request, Please retry the operation!!!");
+        });
     }
   }
 

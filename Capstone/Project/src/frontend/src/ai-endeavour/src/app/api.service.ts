@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
 
-  BASE_URL = 'http://ec2-13-235-64-240.ap-south-1.compute.amazonaws.com';
+  BASE_URL = 'http://15.206.224.228';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -63,4 +63,13 @@ export class ApiService {
     JSON.stringify(inputData));
     return response;
  }
+
+ // Clear the dataset
+  public clear(base_directory: string): Observable<any> {
+    console.log('Base directory: ' + base_directory);
+    var trainUrl = this.BASE_URL + '/clear?directory=' + base_directory;
+    var response = this.httpClient.get<any>(trainUrl);
+    return response;
+  }
+
 }
