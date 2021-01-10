@@ -7,7 +7,6 @@ import { TransferHttpCacheModule } from '@nguniversal/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgtUniversalModule } from '@ng-toolkit/universal';
 import { SentimentAnalysisComponent } from './sentiment-analysis/sentiment-analysis.component'
-import { MenuComponent } from './menu/menu.component'
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { WelcomeComponent } from './welcome/welcome.component';
@@ -18,7 +17,6 @@ import { HeaderComponent } from './header/header.component';
   declarations: [
     AppComponent,
     SentimentAnalysisComponent,
-    MenuComponent,
     WelcomeComponent,
     ImageClassificationComponent,
     HeaderComponent
