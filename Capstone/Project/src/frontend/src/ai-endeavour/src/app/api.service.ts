@@ -7,12 +7,11 @@ import { Injectable } from '@angular/core';
 })
 export class ApiService {
 
-  BASE_URL = 'http://127.0.0.1:5000';
+  BASE_URL = 'http://15.206.224.228';
 
   constructor(private httpClient: HttpClient) { }
 
   public upload(file: File): Observable<any> {
-    console.log("File to be uploaded: " + file.name);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -64,4 +63,13 @@ export class ApiService {
     JSON.stringify(inputData));
     return response;
  }
+
+ // Clear the dataset
+  public clear(base_directory: string): Observable<any> {
+    console.log('Base directory: ' + base_directory);
+    var trainUrl = this.BASE_URL + '/clear?directory=' + base_directory;
+    var response = this.httpClient.get<any>(trainUrl);
+    return response;
+  }
+
 }
