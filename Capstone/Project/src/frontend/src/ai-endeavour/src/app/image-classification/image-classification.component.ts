@@ -42,59 +42,80 @@ export class ImageClassificationComponent {
     if (event.target.files && event.target.files[0]){
       this.uploading = true;
       var files = event.target.files;
-      // this.classes = this.extractClasses(files);
-      for (let index = 0; index < files.length; index++){
-        var filePath = files[index].webkitRelativePath;
-        if(filePath !== ''){
-          var pathSplit = filePath.split("/");
-          if(pathSplit.length > 3){
-            alert("We are sorry, currently multiple dpeth of directory is not supported, Please upload directory with class as subdirectory and images inside the class directory")
-            return;
-          }
-          var classname = filePath.split("/")[1];
-          if(this.classes.includes(classname) == false){
-            console.log(classname);
-            this.classes.push(classname);
-          }
-        }
+      var filePath = files[0].webkitRelativePath;
+      if(this.validateImageFolder(filePath) === false){
+        alert("We are sorry, currently multiple dpeth of directory is not supported, Please upload directory with in the format Image Folder -> Class Folder -> Class Image file");
+        return;
       }
-      console.log(this.classes);
-      var path = files[0].webkitRelativePath;
-      var Folder = path.split("/");
-      console.log('Selected Folder: ' + Folder[0]);
-      this.baseDirectory = Folder[0];
-      console.log('Base Directory: ' + this.baseDirectory);
-      var filesCount = files.length;
-      this.uploadedImagesCount = filesCount;
-      var previewCount = filesCount <= 10  ? filesCount : 10;
-      for (let i = 0; i < previewCount; i++) {
-              var reader = new FileReader();
-              reader.onload = (event:any) => {
-                this.previewImages.push(event.target.result);
-                if(i == 9){
-                  this.uploaded = true;
-                  this.uploading = false;
 
-                  // Upload to server
-                  for(let index = 0; index < files.length; index++){
-                    this.apiService.upload(files[index]).subscribe(data =>
-                      {
-                        console.log('Response: ' + JSON.stringify(data));
-                        if(index == files.length - 1){
-                          this.uploading = false;
-                        }
-                      },
-                      error => { //Error callback
-                        console.error('Error caught in component\n' + JSON.stringify(error))
-                        this.uploading = false;
-                        alert("An error occured while processing the request, Please retry the operation!!!");
-                      });
-                  }
-                }
-              }
-              reader.readAsDataURL(event.target.files[i]);
+      this.classes = this.getClasses(files);
+      this.uploadedImagesCount = files.length;
+      var previewCount = this.uploadedImagesCount <= 10  ? this.uploadedImagesCount : 10;
+
+      // Preview sample images - 10
+      for (let i = 0; i < previewCount; i++) {
+        var reader = new FileReader();
+        reader.onload = (event:any) => {
+          this.previewImages.push(event.target.result);
+        }
+        reader.readAsDataURL(event.target.files[i]);
+      }
+
+      this.uploaded = true;
+      this.uploading = false;
+
+      // Upload to server
+      const MAX_FILE_UPLOAD = 1000;
+      var noOfFilesToUpload = files.length;
+      if(files.length > MAX_FILE_UPLOAD){
+        noOfFilesToUpload = MAX_FILE_UPLOAD;
+      }
+      for(let index = 0; index < noOfFilesToUpload; index++) {
+        this.apiService.upload(files[index]).subscribe(data =>
+          {
+            if(index == noOfFilesToUpload - 1) {
+              this.uploading = false;
+              this.uploaded = true;
+              console.log("Uploaded " + index + " files");
+            }
+          },
+          error => { //Error callback
+            console.error('Error caught in component\n' + JSON.stringify(error))
+            this.uploading = false;
+            alert("An error occured while processing the request, Please retry the operation!!!");
+          });
       }
     }
+  }
+
+  validateImageFolder(imagePath){
+    if(imagePath !== ''){
+      var pathSplit = imagePath.split("/");
+      if(pathSplit.length != 3){
+        return false;
+      }
+      return true;
+    }
+  }
+
+  getClasses(files){
+    var classes = []
+    for (let index = 0; index < files.length; index++){
+      var filePath = files[index].webkitRelativePath;
+      if(filePath !== ''){
+        var pathSplit = filePath.split("/");
+        if(pathSplit.length > 3){
+          alert("We are sorry, currently multiple dpeth of directory is not supported, Please upload directory with class as subdirectory and images inside the class directory")
+          return;
+        }
+        var classname = filePath.split("/")[1];
+        if(classes.includes(classname) == false){
+          classes.push(classname);
+        }
+      }
+    }
+    console.log(classes);
+    return classes;
   }
 
   trainModel(){
