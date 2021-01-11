@@ -13,6 +13,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { ImageClassificationComponent } from './image-classification/image-classification.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
+import {IvyCarouselModule} from 'angular-responsive-carousel';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { FooterComponent } from './footer/footer.component';
     HttpClientModule,
     NgtUniversalModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    IvyCarouselModule
   ],
   providers: [],
   bootstrap: [AppComponent]

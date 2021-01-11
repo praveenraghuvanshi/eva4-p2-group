@@ -1,15 +1,27 @@
 <main class="container">
-  <div class="row">
-    <h1 class="display-4">Welcome to AI Endeavour</h1>
-   <div class="col-sm-12">
-     <img class="img-responsive img-thumbnail img-banner"  src="../../assets/galaxy.jpg" alt=""></div>
-  </div>
-  <br>
+    <h1 class="display-4 text-center">Welcome to AI Endeavour</h1>
+    <hr class="my-4">
+    <carousel cellWidth='100%' autoplay=true autoplayInterval=2000 dots=true [height]="310" >
+      <div class="carousel-cell" >
+          <img class="img-banner" src="../../assets/galaxy.jpg">
+      </div>
+      <div class="carousel-cell">
+          <img class="img-banner" src="../../assets/ic.png">
+      </div>
+      <div class="carousel-cell">
+          <img class="img-banner" src="../../assets/sa.jpg">
+      </div>
+      <div class="carousel-cell">
+        <img class="img-banner" src="../../assets/galaxy.jpg">
+    </div>
+    </carousel>
+</main>
+
 
     <!-- Cards -->
-    <div class="row">
+    <!--<div class="row">
       <div class="col-sm-3">
-        <!--Image Classification-->
+
         <div class="card text-white bg-dark" style="width: 18rem; height: 10rem;">
           <div class="card-body">
             <h5 class="card-title">Image Classification</h5>
@@ -19,7 +31,7 @@
         </div>
       </div>
       <div class="col-sm-3">
-        <!--Sentiment Analysis-->
+
         <div class="card text-white bg-dark" style="width: 18rem; height: 10rem;">
           <div class="card-body">
             <h5 class="card-title">Sentiment Analysis</h5>
@@ -28,6 +40,4 @@
           </div>
         </div>
       </div>
-    </div>
-
-</main>
+    </div>-->

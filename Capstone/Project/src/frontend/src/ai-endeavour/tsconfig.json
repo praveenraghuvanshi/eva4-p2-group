@@ -19,6 +19,7 @@
       "dom"
     ],
     "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   }
 }
