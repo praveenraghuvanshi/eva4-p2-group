@@ -1,13 +1,13 @@
 <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top px-4">
   <a class="navbar-brand" href="#">AI Endeavour</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+  <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"  data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
     aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbarCollapse">
+  <div class="collapse navbar-collapse" id="navbarCollapse" [ngbCollapse]="isCollapsed">
     <ul class="navbar-nav mr-auto">
 
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" routerLink="/home">Home</a>
       </li>
       <li class="nav-item">
